@@ -31,7 +31,7 @@ public class MotifStatistics {
                     }
                 }
             }
-            zTrans = zTransform(pccs);
+            zTrans = normalize(pccs);
             for (int gene1 : motifs.keySet()) {
                 for (int gene2 : motifs.keySet()) {
                     if (gene1 >= gene2) {
@@ -48,13 +48,13 @@ public class MotifStatistics {
         return pccs;
     }
 
-    public static double[][] zTransform(double[][] pccs) {
-        double[][] z = new double[pccs.length][pccs.length];
+    public static double[][] normalize(double[][] pccs) {
+        double[][] z = pccs;
         double mean = 0;
         int c = 0;
         for (int i = 0; i < pccs.length; i++) {
             for (int j = i + 1; j < pccs.length; j++) {
-                z[i][j] = 0.5 * Math.log((1 + pccs[i][j]) / (1 - pccs[i][j]));
+//                z[i][j] = 0.5 * Math.log((1 + pccs[i][j]) / (1 - pccs[i][j]));
                 mean += z[i][j];
                 c++;
             }
@@ -71,6 +71,7 @@ public class MotifStatistics {
         for (int i = 0; i < pccs.length; i++) {
             for (int j = i + 1; j < pccs.length; j++) {
                 z[i][j] /= sdev;
+                z[j][i] = z[i][j];
             }
         }
         return z;

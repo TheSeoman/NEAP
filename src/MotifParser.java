@@ -1,7 +1,7 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,5 +32,46 @@ public class MotifParser {
             e.printStackTrace();
         }
         return new MotifList(motifs, idMap);
+    }
+
+    public static void shuffleSequences(String pathIn, String pathOut){
+        HashMap<String, String> idMap = new HashMap<String, String>();
+        try {
+            String line;
+            BufferedReader br = new BufferedReader(new FileReader(pathIn));
+            BufferedWriter out = new BufferedWriter(new FileWriter(pathOut));
+            String seq = "";
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith(">")) {
+                    if(seq != ""){
+                        out.write(line);
+                        seq = shuffle(seq);
+                        for(int i = 0; i < seq.length(); i += 60){
+                            out.write(seq.substring(0, 60) + "\n");
+                        }
+                    }
+                    seq = "";
+                } else {
+                    seq += line;
+                }
+            }
+            br.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String shuffle(String input){
+        List<Character> characters = new ArrayList<Character>();
+        for(char c:input.toCharArray()){
+            characters.add(c);
+        }
+        StringBuilder output = new StringBuilder(input.length());
+        while(characters.size()!=0){
+            int randPicker = (int)(Math.random()*characters.size());
+            output.append(characters.remove(randPicker));
+        }
+        return output.toString();
     }
 }

@@ -8,11 +8,15 @@ public class Main {
 //        MotifList mlist = MotifParser.readMotifs("/home/seoman/Documents/NEAP/fimo_out/fimo.txt", 0.001, 510);
 //        MotifStatistics.calculatePCCs(mlist, "/home/seoman/Documents/NEAP/pcc_z.tsv", false);
 //        System.out.println("done");
-//        changeToEntrezId("/home/sch/schmidtju/NEAP/EnsemblEntrezMapping.tsv", "/home/sch/schmidtju/NEAP/EnsemblUpstreamSeqs.fasta", "/home/sch/schmidtju/NEAP/EntrezUpstreamSeqs.fasta");
-        Map<String, String> idMap = GtfParser.parseMappingFile("/home/sch/schmidtju/IntellijProjects/NEAP/EnsemblEntrezMapping.tsv",
-                "/home/sch/schmidtju/IntellijProjects/NEAP/EntrezIds", 1, 0);
-        GtfParser.generateFasta(idMap,
-                "/home/proj/biosoft/praktikum/genomes/human/hg19/standard_chr/Homo_sapiens.GRCh37.75.gtf",
-                "/home/sch/schmidtju/IntellijProjects/NEAP/UpstreamSeqsBiomartMap.fasta");
+//        changeToEntrezId("/home/sch/schmidtju/IntellijProjects/NEAP/EnsemblEntrezMapping.tsv", "/home/sch/schmidtju/NEAP/EnsemblUpstreamSeqs.fasta", "/home/sch/schmidtju/NEAP/EntrezUpstreamSeqs.fasta");
+//        Map<String, String> idMap = GtfParser.parseMappingFile("/home/sch/schmidtju/IntellijProjects/NEAP/EnsemblEntrezMapping.tsv",
+//                "/home/sch/schmidtju/IntellijProjects/NEAP/EntrezIds", 1, 0);
+//        GtfParser.generateFastaFromEnsemblGtf(idMap,
+//                "/home/proj/biosoft/praktikum/genomes/human/hg19/standard_chr/Homo_sapiens.GRCh37.75.gtf",
+//                "/home/sch/schmidtju/IntellijProjects/NEAP/UpstreamSeqsBiomartMap.fasta");
+        GtfParser.generateFastaFromGff3("/home/sch/schmidtju/IntellijProjects/NEAP/EntrezIds",
+                 "/home/proj/biosoft/praktikum/genomes/human/hg19/ref_GRCh37.p5_top_level.gff3.gz",
+                 "/home/sch/schmidtju/IntellijProjects/NEAP/EntrezUpstreamSeqsGff3.fasta"
+                );
     }
 }

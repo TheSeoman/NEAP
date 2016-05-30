@@ -35,7 +35,6 @@ public class MotifParser {
     }
 
     public static void shuffleSequences(String pathIn, String pathOut){
-        HashMap<String, String> idMap = new HashMap<String, String>();
         try {
             String line;
             BufferedReader br = new BufferedReader(new FileReader(pathIn));
@@ -44,11 +43,13 @@ public class MotifParser {
             while ((line = br.readLine()) != null) {
                 if (line.startsWith(">")) {
                     if(seq != ""){
-                        out.write(line);
+                        out.write(line + "_shuffled\n");
                         seq = shuffle(seq);
-                        for(int i = 0; i < seq.length(); i += 60){
-                            out.write(seq.substring(0, 60) + "\n");
+                        int i;
+                        for(i = 0; i < seq.length() - 60; i += 60){
+                            out.write(seq.substring(i, i + 60) + "\n");
                         }
+                        out.write(seq.substring(i, seq.length()) + "\n");
                     }
                     seq = "";
                 } else {

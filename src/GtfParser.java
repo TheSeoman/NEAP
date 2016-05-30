@@ -19,11 +19,10 @@ import java.util.regex.Pattern;
  * Created by schmidtju on 30.05.16.
  */
 public class GtfParser {
-    public static Map<String, String> parseMappingFile(String mappingPath, String idPath){
+    public static Map<String, String> parseMappingFile(String mappingPath, String idPath, int entrezCol, int ensemblCol ){
         Map<String, String> ensembl2Entrez = new HashMap<>();
         Set<String> entrezIds = new HashSet<>();
         try {
-//            Map<String, String> entrez2Ensembl = new HashMap<>();
             String line;
             String[] split;
             BufferedReader br = new BufferedReader(new FileReader(idPath));
@@ -35,8 +34,8 @@ public class GtfParser {
             while ((line = br.readLine()) != null) {
                 split = line.split("\t");
 
-                if(split.length > 2 && entrezIds.contains(split[1])){
-                    ensembl2Entrez.put(split[2], split[1]);
+                if(split.length > Math.max(entrezCol, ensemblCol) && entrezIds.contains(split[entrezCol])){
+                    ensembl2Entrez.put(split[ensemblCol], split[entrezCol]);
                 }
             }
         } catch (IOException e){
@@ -45,10 +44,9 @@ public class GtfParser {
         return ensembl2Entrez;
     }
 
-    public static void generateFasta(String mappingPath, String idPath, String gtfPath, String fastaPath) {
+    public static void generateFasta( Map<String, String> idMap, String gtfPath, String fastaPath) {
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(fastaPath));
-            Map<String, String> idMap = parseMappingFile(mappingPath, idPath);
             String line;
 
             BufferedReader br = new BufferedReader(new FileReader(gtfPath));

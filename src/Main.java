@@ -1,3 +1,5 @@
+import java.util.Map;
+
 /**
  * Created by seoman on 5/24/16.
  */
@@ -7,11 +9,10 @@ public class Main {
 //        MotifStatistics.calculatePCCs(mlist, "/home/seoman/Documents/NEAP/pcc_z.tsv", false);
 //        System.out.println("done");
 //        changeToEntrezId("/home/sch/schmidtju/NEAP/EnsemblEntrezMapping.tsv", "/home/sch/schmidtju/NEAP/EnsemblUpstreamSeqs.fasta", "/home/sch/schmidtju/NEAP/EntrezUpstreamSeqs.fasta");
-        GtfParser.generateFasta("/home/sch/schmidtju/IntellijProjects/NEAP/gene2ensembl",
-                "/home/sch/schmidtju/IntellijProjects/NEAP/EntrezIds",
+        Map<String, String> idMap = GtfParser.parseMappingFile("/home/sch/schmidtju/IntellijProjects/NEAP/EnsemblEntrezMapping.tsv",
+                "/home/sch/schmidtju/IntellijProjects/NEAP/EntrezIds", 1, 0);
+        GtfParser.generateFasta(idMap,
                 "/home/proj/biosoft/praktikum/genomes/human/hg19/standard_chr/Homo_sapiens.GRCh37.75.gtf",
-                "/home/sch/schmidtju/IntellijProjects/NEAP/selfExtracted.fasta");
-//        GtfParser.parseMappingFile("/home/sch/schmidtju/IntellijProjects/NEAP/gene2ensembl",
-//                "/home/sch/schmidtju/IntellijProjects/NEAP/EntrezIds");
+                "/home/sch/schmidtju/IntellijProjects/NEAP/UpstreamSeqsBiomartMap.fasta");
     }
 }

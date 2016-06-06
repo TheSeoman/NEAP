@@ -27,7 +27,7 @@ public class MotifStatistics {
                     if (gene1 > gene2) {
                         int id1 = idMap.get(gene1);
                         int id2 = idMap.get(gene2);
-                        double pcc = calculatePCC(motifs.get(gene1), motifs.get(gene2));
+                        double pcc = ignoreNull ? calculatePCCIgnoreZero(motifs.get(gene1), motifs.get(gene2)) : calculatePCC(motifs.get(gene1), motifs.get(gene2));
                         pccs[id1][id2] = pcc;
                         pccs[id2][id1] = pcc;
 
@@ -64,6 +64,9 @@ public class MotifStatistics {
         int c = 0;
         for (int i = 0; i < pccs.length; i++) {
             for (int j = i + 1; j < pccs.length; j++) {
+                if(Double.isNaN(z[i][j])){
+                    continue;
+                }
 //                z[i][j] = 0.5 * Math.log((1 + pccs[i][j]) / (1 - pccs[i][j]));
                 mean += z[i][j];
                 c++;
@@ -73,6 +76,9 @@ public class MotifStatistics {
         double sdev = 0;
         for (int i = 0; i < pccs.length; i++) {
             for (int j = i + 1; j < pccs.length; j++) {
+                if(Double.isNaN(z[i][j])){
+                    continue;
+                }
                 z[i][j] -= mean;
                 sdev += Math.pow(z[i][j], 2);
             }
@@ -80,6 +86,9 @@ public class MotifStatistics {
         sdev = Math.sqrt(sdev/(c - 1));
         for (int i = 0; i < pccs.length; i++) {
             for (int j = i + 1; j < pccs.length; j++) {
+                if(Double.isNaN(z[i][j])){
+                    continue;
+                }
                 z[i][j] /= sdev;
                 z[j][i] = z[i][j];
             }
@@ -111,7 +120,7 @@ public class MotifStatistics {
         return pcc;
     }
 
-    public static double calculatePCCIngoreZero(int[] v1, int[] v2) {
+    public static double calculatePCCIgnoreZero(int[] v1, int[] v2) {
         double v1sum = 0;
         double v2sum = 0;
         double pcc = 0;

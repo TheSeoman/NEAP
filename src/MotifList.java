@@ -5,6 +5,7 @@ import java.util.Map;
  */
 public class MotifList {
     private Map<Integer, int[]> motifs;
+    private Map<Integer, double[]> qvalues;
     private Map<String, Integer> motifIdMap;
     private Map<Integer, Integer> geneIdMap;
 

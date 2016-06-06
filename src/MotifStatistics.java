@@ -9,8 +9,8 @@ import java.util.Map;
  * Created by seoman on 5/24/16.
  */
 public class MotifStatistics {
-    public static double[][] calculatePCCs(MotifList mlist, String pathOut, boolean ignoreNull) {
-        Map<Integer, int[]> motifs = mlist.getMotifs();
+    public static double[][] calculatePCCs(MotifList mlist, String pathOut, boolean usepValues, boolean ignoreNull) {
+        Map<Integer, double[]> motifs = usepValues ? mlist.getpValues() : mlist.getMotifs();
         Map<Integer, Integer> idMap = new HashMap<>();
         double[][] pccs = new double[motifs.size()][motifs.size()];
         double[][] zTrans;
@@ -96,7 +96,7 @@ public class MotifStatistics {
         return z;
     }
 
-    public static double calculatePCC(int[] v1, int[] v2) {
+    public static double calculatePCC(double[] v1, double[] v2) {
         double v1sum = 0;
         double v2sum = 0;
         double pcc = 0;
@@ -120,7 +120,7 @@ public class MotifStatistics {
         return pcc;
     }
 
-    public static double calculatePCCIgnoreZero(int[] v1, int[] v2) {
+    public static double calculatePCCIgnoreZero(double[] v1, double[] v2) {
         double v1sum = 0;
         double v2sum = 0;
         double pcc = 0;

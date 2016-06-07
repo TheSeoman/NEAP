@@ -65,22 +65,22 @@ public class MotifParser {
         }
     }
 
-    public static void filterForGo(Map<Integer, Set<Integer>> positivePairs, Map<Integer, Set<Integer>> negativePairs, String pathMotifs){
+    public static void filterForGo(Network positivePairs, Network negativePairs, String pathCorrelation){
         try {
             String line;
-            BufferedReader br = new BufferedReader(new FileReader(pathMotifs));
-            BufferedWriter outPositive = new BufferedWriter(new FileWriter(pathMotifs.substring(0, pathMotifs.length() - 4) + "_positive.tsv"));
-            BufferedWriter outNegative = new BufferedWriter(new FileWriter(pathMotifs.substring(0, pathMotifs.length() - 4) + "_negative.tsv"));
-            BufferedWriter outRest = new BufferedWriter(new FileWriter(pathMotifs.substring(0, pathMotifs.length() - 4) + "_rest.tsv"));
+            BufferedReader br = new BufferedReader(new FileReader(pathCorrelation));
+            BufferedWriter outPositive = new BufferedWriter(new FileWriter(pathCorrelation.substring(0, pathCorrelation.length() - 4) + "_positive.tsv"));
+            BufferedWriter outNegative = new BufferedWriter(new FileWriter(pathCorrelation.substring(0, pathCorrelation.length() - 4) + "_negative.tsv"));
+            BufferedWriter outRest = new BufferedWriter(new FileWriter(pathCorrelation.substring(0, pathCorrelation.length() - 4) + "_rest.tsv"));
 
-            String seq = "";
+            br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] split = line.split("\t");
                 int id1 = Integer.parseInt(split[0]);
                 int id2 = Integer.parseInt(split[1]);
-                if((positivePairs.containsKey(id1) && positivePairs.get(id1).contains(id2)) || (positivePairs.containsKey(id2) && positivePairs.get(id2).contains(id1))){
+                if(positivePairs.getIdMap().containsKey(id1) && positivePairs.getIdMap().containsKey(id2) && positivePairs.getNet()[positivePairs.getIdMap().get(id1)][positivePairs.getIdMap().get(id2)] == 1) {
                     outPositive.write(line + "\n");
-                } else if((negativePairs.containsKey(id1) && negativePairs.get(id1).contains(id2)) || (negativePairs.containsKey(id2) && negativePairs.get(id2).contains(id1))){
+                } else if(negativePairs.getIdMap().containsKey(id1) && negativePairs.getIdMap().containsKey(id2) && negativePairs.getNet()[negativePairs.getIdMap().get(id1)][negativePairs.getIdMap().get(id2)] == 1){
                     outNegative.write(line + "\n");
                 } else {
                     outRest.write(line + "\n");
@@ -90,6 +90,46 @@ public class MotifParser {
             outPositive.close();
             outNegative.close();
             outRest.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void countIntoBins(String path){
+        int[] bins = new int[8];
+        try {
+            String line;
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            BufferedWriter out = new BufferedWriter(new FileWriter(path.substring(0, path.length() - 4) + "_binsum.tsv"));
+
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split("\t");
+                double z = Double.parseDouble(split[3]);
+                if(z < -1.5){
+                    bins[0]++;
+                } else if (z < -0.5){
+                    bins[1]++;
+                } else if (z < 0.5){
+                    bins[2]++;
+                } else if (z < 1.5){
+                    bins[3]++;
+                } else if (z < 2.5){
+                    bins[4]++;
+                } else if (z < 3.5){
+                    bins[5]++;
+                } else if (z < 4.5){
+                    bins[6]++;
+                } else {
+                    bins[7]++;
+                }
+            }
+            br.close();
+            for(int i = 0; i < bins.length - 1; i++){
+                out.write(i + "\t" + bins[i] + "\n");
+            }
+            out.write(bins.length - 1 + "\t" + bins[bins.length - 1]);
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

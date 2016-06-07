@@ -5,14 +5,45 @@ import java.util.Map;
  */
 public class Main {
     public static void main(String[] args) {
-//        MotifList mlist = MotifParser.readMotifs("C:\\Users\\Seoman\\Documents\\NEAP\\fimo.txt", 0.001, 510);
-//        MotifStatistics.calculatePCCs(mlist, "C:\\Users\\Seoman\\Documents\\NEAP\\pcc_z.tsv", false, false);
-//        MotifStatistics.calculatePCCs(mlist, "/home/seoman/Documents/NEAP/pcc_z_test.tsv", false);
-//        System.out.println("done");
-//        changeToEntrezId("/home/sch/schmidtju/NEAP/EnsemblEntrezMapping.tsv", "/home/sch/schmidtju/NEAP/EnsemblUpstreamSeqs.fasta", "/home/sch/schmidtju/NEAP/EntrezUpstreamSeqs.fasta");
-        GOParser.readPositiveNegativePairs("C:\\Users\\Seoman\\Documents\\NEAP\\GO\\go_positive_set_propagated.csv");
-//        MotifParser.filterForGo(GOParser.readPositiveNegativePairs("C:\\Users\\Seoman\\Documents\\NEAP\\GO\\go_positive_set_propagated.csv"),
-//                GOParser.readPositiveNegativePairs("C:\\Users\\Seoman\\Documents\\NEAP\\GO\\go_negative_set_propagated.csv"),
-//                "C:\\Users\\Seoman\\Documents\\NEAP\\fimo.txt");
+        if(args.length < 2) {
+            printUsage();
+        } else if(args[0].equals("-generateFasta")){
+            try{
+
+            } catch (Exception e){
+                printUsage();
+            }
+        } else if(args[0].equals("-calcCorrelationzScore")){
+            try{
+                MotifList mlist = MotifParser.readMotifs(args[1], Double.parseDouble(args[3]), Integer.parseInt(args[4]));
+                MotifStatistics.calculatePCCs(mlist, args[2], false, Boolean.parseBoolean(args[5]));
+            } catch (Exception e){
+                printUsage();
+            }
+        } else if(args[0].equals("-filterForGo")){
+            try{
+                MotifParser.filterForGo(NetworkParser.parseNetworkFile(args[1], 0, 25000),
+                NetworkParser.parseNetworkFile(args[2], 0, 25000),
+                args[3]);
+            } catch (Exception e){
+                printUsage();
+            }
+        } else if(args[0].equals("-countIntoBins")) {
+            try{
+                MotifParser.countIntoBins(args[1]);
+            } catch (Exception e){
+                printUsage();
+            }
+        } else {
+            printUsage();
+        }
+    }
+
+    private static void printUsage(){
+        System.out.println("Usage:");
+        System.out.println("motifs.jar -generateFasta <>");
+        System.out.println("motifs.jar -calcCorrelationzScore <fimo output file> <output file> <p-value threshhold> <number of motifs> <ignore zeroes (true|false)>");
+        System.out.println("motifs.jar -filterForGo <positive GO file> <negative GO file> <correlation zScore file>");
+        System.out.println("motifs.jar -countIntoBins <correlation zScore file>");
     }
 }

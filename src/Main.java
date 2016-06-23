@@ -5,6 +5,8 @@ import java.util.Map;
  */
 public class Main {
     public static void main(String[] args) {
+        ExpressionData dat = SoftParser.parseSoftGz("E:\\OneDrive\\Uni\\Bioinformatik\\Masterpraktikum NEAP\\Prostate Cancer\\GDS4395_full.soft.gz", new String[]{"baseline"}, "Gene ID","counts");
+        SoftParser.saveExpressionData(dat, "GDS4395_cancer");
         if(args.length < 2) {
             printUsage();
         } else if(args[0].equals("-generateFasta")){

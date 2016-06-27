@@ -1,0 +1,6 @@
+DATASET	Platform	data_type	comment	url
+GDS5072	GPL570: [HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array	count	10 samples with prostate cancer, 1 prostate control sample	http://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS5072
+GDS4824 GPL570: [HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array	count	13 samples with prostate cancer, 8 prostate control samples	http://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS4824
+GDS3113	GPL2986: ABI Human Genome Survey Microarray Version 2	count	96 samples from various tissues, 3 from healthy prostate	http://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS2986
+GDS4114	GPL570: [HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array	transformed count	24 samples from reactive stroma of breast and prostate cancer, 6 prostate cancer, 6 prostate control	http://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS4114
+GDS4395 GPL570: [HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array	count	80 samples from peripheral white blood cells before and during external beam radiation therapy, 10 prostate cancer baseline, 10 control	http://www.ncbi.nlm.nih.gov/sites/GDSbrowser?acc=GDS4395

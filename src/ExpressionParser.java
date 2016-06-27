@@ -1,11 +1,12 @@
 import java.io.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
 
 /**
  * Created by Seoman on 22.06.2016.
  */
-public class SoftParser {
+public class ExpressionParser {
     public static ExpressionData parseSoftGz(String path, String[] conditions, String idColName, String type) {
         HashMap<String, Integer> idMap = new HashMap<String, Integer>();
         int idc = 0;
@@ -64,7 +65,7 @@ public class SoftParser {
                             break;
                         } else {
                             finalSamples = samples.get(conditions[0]);
-                            for(Set<String> sample : samples.values()){
+                            for (Set<String> sample : samples.values()) {
                                 finalSamples.retainAll(sample);
                             }
                             sampleCols = new int[finalSamples.size()];
@@ -110,7 +111,7 @@ public class SoftParser {
                 }
             }
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
 
         double[][] valuesArr = new double[values.size()][samples.size()];
@@ -130,17 +131,52 @@ public class SoftParser {
                 out.write("\t" + sample);
             }
             out.write("\n");
+            int length = ex.getValues()[0].length;
             for (String id : ex.getIdMap().keySet()) {
                 out.write(id);
+                if(id.equals("6548"))
+                    System.out.println("");
                 for (double value : ex.getValues()[ex.getIdMap().get(id)]) {
                     out.write("\t" + value);
                 }
                 out.write("\n");
             }
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static ExpressionData parseExpressionData(String path, String type) {
+        List<double[]> values = new ArrayList<>();
+        Map<String, Integer> idMap = new HashMap<>();
+        String[] samples = null;
+        int c = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line = br.readLine();
+            String[] split = line.split("\t");
+            samples = Arrays.copyOfRange(split, 1, split.length);
+            while ((line = br.readLine()) != null) {
+                split = line.split("\t");
+                String id = split[0];
+                double[] value = new double[split.length - 1];
+                for(int i = 1; i < split.length; i++){
+                    value[i-1] = Double.parseDouble(split[i]);
+                }
+                values.add(value);
+                idMap.put(id, c);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        double[][] valuesArr = new double[values.size()][samples.length];
+        int i = 0;
+        for (double[] value : values) {
+            valuesArr[i] = value;
+            i++;
+        }
+        return new ExpressionData(type, valuesArr, idMap, samples);
     }
 
 }

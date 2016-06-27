@@ -1,12 +1,12 @@
-import java.util.Map;
-
 /**
  * Created by seoman on 5/24/16.
  */
 public class Main {
     public static void main(String[] args) {
-        ExpressionData dat = SoftParser.parseSoftGz("E:\\OneDrive\\Uni\\Bioinformatik\\Masterpraktikum NEAP\\Prostate Cancer\\GDS4395_full.soft.gz", new String[]{"baseline"}, "Gene ID","counts");
-        SoftParser.saveExpressionData(dat, "GDS4395_cancer");
+//        ExpressionData dat = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/GDS4114_full.soft.gz", new String[]{"prostate", "normal"}, "Gene ID", "counts");
+//        ExpressionParser.saveExpressionData(dat, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/GDS4114_normal");
+        ExpressionData dat = ExpressionParser.parseExpressionData("/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/GDS4114_cancer", "counts");
+        ExpressionStatistics.saveExpressionCorrelations(dat, "/home/seoman/Documents/NEAP/Prostate Cancer/GDS4114_cancer_corr");
         if(args.length < 2) {
             printUsage();
         } else if(args[0].equals("-generateFasta")){

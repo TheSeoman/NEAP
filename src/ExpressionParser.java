@@ -11,6 +11,7 @@ public class ExpressionParser {
         HashMap<String, Integer> idMap = new HashMap<String, Integer>();
         int idc = 0;
         List<double[]> values = new ArrayList<>();
+        List<Integer> occurrences = new ArrayList<>();
         String line;
         Map<String, Set<String>> samples = new HashMap<String, Set<String>>();
         String subsetId = "";
@@ -96,11 +97,15 @@ public class ExpressionParser {
                             }
                             for (String geneId : split[idCol].split("///")) {
                                 if (idMap.containsKey(geneId)) {
-                                    double[] oldValues = values.get(idMap.get(geneId));
+                                    int idInt = idMap.get(geneId);
+                                    int prevOccurrences = occurrences.get(idInt);
+                                    occurrences.set(idInt, prevOccurrences + 1);
+                                    double[] oldValues = values.get(idInt);
                                     for (int i = 0; i < value.length; i++) {
-                                        oldValues[i] += value[i];
+                                        oldValues[i] = ((oldValues[i] * prevOccurrences) + value[i]) / (prevOccurrences + 1);
                                     }
                                 } else {
+                                    occurrences.add(1);
                                     idMap.put(geneId, idc);
                                     idc++;
                                     values.add(value);

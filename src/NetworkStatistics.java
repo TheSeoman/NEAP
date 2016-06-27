@@ -1,8 +1,7 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by schmidtju on 25.04.16.
@@ -16,7 +15,7 @@ public class NetworkStatistics {
             String path = args[0];
             Double threshold = Double.parseDouble(args[1]);
             String dir = args[2];
-            if(!dir.endsWith("/")){
+            if (!dir.endsWith("/")) {
                 dir += "/";
             }
             System.out.println("Parsing " + path + "...");
@@ -27,35 +26,6 @@ public class NetworkStatistics {
             System.out.println("Calculating statistics for " + tissue + "...");
 //            calcBasicStats(net, tissue, dir);
             saveIds(net, tissue, dir);
-        }
-    }
-
-    public static void calcBasicStats(Map<Integer, Map<Integer, Double>> net, String dir, String tissue) {
-        int nodes = net.size();
-        int edges = 0;
-        Map<Integer, Integer> hist = new HashMap<Integer, Integer>();
-        for (int gene : net.keySet()) {
-            edges += net.get(gene).size();
-            if (!hist.containsKey(net.get(gene).size()))
-                hist.put(net.get(gene).size(), 1);
-            else
-                hist.put(net.get(gene).size(), hist.get(net.get(gene).size()) + 1);
-        }
-        double graphDensity = edges / (nodes * (nodes - 1.0) / 2);
-
-        try {
-            BufferedWriter out_stats = new BufferedWriter(new FileWriter(dir + tissue + "_stats"));
-            out_stats.write("#nodes:\t" + nodes + "\n");
-            out_stats.write("#edges:\t" + edges + "\n");
-            out_stats.write("Graph Density:\t" + graphDensity + "\n");
-            out_stats.close();
-            BufferedWriter out_hist = new BufferedWriter(new FileWriter(dir + tissue + "_hist"));
-            for (int degree : hist.keySet()) {
-                out_hist.write(degree + "\t" + hist.get(degree) + "\n");
-            }
-            out_hist.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -125,7 +95,7 @@ public class NetworkStatistics {
                 for (int h = j + 1; h < net.length; h++) {
                     if (net[i][j] == 1)
                         edges++;
-                    if (net[i][h] == 1 && net[j][h] == 1){
+                    if (net[i][h] == 1 && net[j][h] == 1) {
                         localCC[i] += 1;
                         localCC[j] += 1;
                     }
@@ -152,6 +122,90 @@ public class NetworkStatistics {
             globalCC += localCC.get(gene1);
         }
         System.out.println("Global Clustering Coefficient: " + globalCC);
+    }
+
+    public static double calcTStatistic(Network network, Set<Integer> geneSet) {
+        int cSet = 0;
+        int cOut = 0;
+        List<Double> inSet = new LinkedList<>();
+        List<Double> adjacent = new LinkedList<>();
+        for (int id1 : geneSet) {
+            if(!network.genMap.containsKey(id1)){
+                System.out.println("Entrez Gene Id: " + id1 + " not in network.");
+                continue;
+            }
+            for (int id2 : network.genMap.keySet()) {
+                if (geneSet.contains(id2)) {
+                    if (id1 > id2) {
+                        inSet.add(network.getEdge(id1, id2));
+                    }
+                } else {
+                    if (id1 > id2) {
+                        adjacent.add(network.getEdge(id1, id2));
+                    }
+                }
+            }
+        }
+
+        int nw = inSet.size();
+        int nb = adjacent.size();
+
+        double Xw = 0; //mean within
+        for(double d : inSet){
+            Xw += d;
+        }
+        Xw /= nw;
+
+        double Xb = 0; //mean adjacent
+        for(double d : adjacent){
+            Xb += d;
+        }
+        Xb /= nb;
+
+        double sw = 0; //standard deviation within
+        for(double d : inSet){
+            sw += Math.pow(d - Xw, 2);
+        }
+        sw = Math.sqrt(sw/nw);
+
+        double sb = 0; //standard deviation adjacent
+        for(double d : inSet){
+            sb += Math.pow(d - Xb, 2);
+        }
+        sb = Math.sqrt(sw/nb);
+
+        double sx = Math.sqrt(Math.pow(sw, 2)/nw + Math.pow(sb, 2)/nb);
+
+        double t = (Xw - Xb) / sx;
+
+        return t;
+    }
+
+    public static double calcZStatistic(Network network, Set<Integer> geneSet, int iterations) {
+        geneSet.retainAll(network.genMap.keySet());
+        double t_up = NetworkStatistics.calcTStatistic(network, geneSet);
+        double[] randomTs = new double[iterations];
+        double randomSum = 0;
+        for(int i = 0; i < iterations; i++){
+            Set<Integer> genesRand = GeneIdParser.generateRandomGeneSet(network.genMap.keySet(), geneSet.size());
+            double randomT = NetworkStatistics.calcTStatistic(network, genesRand);
+            randomSum += randomT;
+            randomTs[i] = randomT;
+        }
+        double randomMean = randomSum/iterations;
+        double randomDev = 0;
+        for(double randomT : randomTs){
+            randomDev += Math.pow(randomT - randomMean, 2);
+        }
+        randomDev = Math.sqrt(randomDev/iterations);
+        System.out.println("T_up: " + t_up);
+        System.out.println("randomMean: " + randomMean);
+        System.out.println("randomStandardDev: " + randomDev);
+
+        double z = (t_up - randomMean)/randomDev;
+        System.out.println("z_up: " + z);
+
+        return z;
     }
 
 }

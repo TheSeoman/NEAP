@@ -19,7 +19,7 @@ public class Network {
 
 	private int geneSize;
 	private ByteBuffer[] input;
-	static HashMap<Integer, Integer> genMap = new HashMap<Integer, Integer>();
+	public static HashMap<Integer, Integer> genMap = new HashMap<Integer, Integer>();
 
 	public Network(String path, String genes) throws IOException {
 

@@ -1,19 +1,28 @@
+
+import java.util.Set;
+
 /**
  * Created by seoman on 5/24/16.
  */
 
 public class Main {
     public static void main(String[] args) {
-        String experiment = "GDS4395";
-        Network network = NetworkParser.readBinaryNetwork("/home/sch/schmidtju/IntellijProjects/NEAP/networks/all_tissues", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
+        String experiment = "GDS4114";
+        Network network = NetworkParser.readBinaryNetwork("/home/sch/schmidtju/IntellijProjects/NEAP/networks/thyroid_gland", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
+        Set<Integer> genes_up = GeneIdParser.readGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/" + experiment + "_up.tsv");
+        Set<Integer> genes_down = GeneIdParser.readGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/" + experiment + "_down.tsv");
+        double z_up = NetworkStatistics.calcZStatistic(network, genes_up, 100);
+        double z_down = NetworkStatistics.calcZStatistic(network, genes_down, 100);
+
+//        System.out.println("down: " + t_down);
 //        ExpressionData cancer = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"baseline"}, "Gene ID", "counts");
 //        ExpressionParser.saveExpressionData(cancer, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_cancer");
 //        ExpressionData normal = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"control"}, "Gene ID", "counts");
 //        ExpressionParser.saveExpressionData(normal, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_normal");
 //        ExpressionData data = ExpressionParser.parseExpressionData("/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_cancer", "count");
 //        ExpressionStatistics.saveExpressionCorrelations(data, "/home/seoman/Documents/NEAP/Prostate Cancer/Correlations/" + experiment + "_cancer_cor");
-        ExpressionData dat = ExpressionParser.parseExpressionData("/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/GDS4114_cancer", "counts");
-        ExpressionStatistics.saveExpressionCorrelations(dat, "/home/seoman/Documents/NEAP/Prostate Cancer/GDS4114_cancer_corr");
+//        ExpressionData dat = ExpressionParser.parseExpressionData("/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/GDS4114_cancer", "counts");
+//        ExpressionStatistics.saveExpressionCorrelations(dat, "/home/seoman/Documents/NEAP/Prostate Cancer/GDS4114_cancer_corr");
         if(args.length < 2) {
             printUsage();
         } else if(args[0].equals("-generateFasta")){

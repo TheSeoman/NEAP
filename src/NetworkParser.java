@@ -1,13 +1,11 @@
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
-
 /**
  * Created by schmidtju on 25.04.16.
  */
 public class NetworkParser {
-    public static Network parseNetworkFile(String path, double threshold, int size) {
+    public static Net parseNetworkFile(String path, double threshold, int size) {
         HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>(size);
         byte[][] net = new byte[size][size];
         int id1 = 0, id2 = 0, idcount = 0;
@@ -51,10 +49,19 @@ public class NetworkParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new Network(net, idMap);
+        return new Net(net, idMap);
     }
 
-    public static Network parseNetworkFileGZ(String path, double threshold, int size) {
+    public static Network readBinaryNetwork(String networkPath, String allGenePath){
+        try {
+            return new Network(networkPath, allGenePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Net parseNetworkFileGZ(String path, double threshold, int size) {
         HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>(size);
         byte[][] net = new byte[size][size];
         int id1 = 0, id2 = 0, idcount = 0;
@@ -92,7 +99,7 @@ public class NetworkParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new Network(net, idMap);
+        return new Net(net, idMap);
     }
 
 }

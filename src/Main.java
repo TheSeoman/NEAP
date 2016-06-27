@@ -1,9 +1,13 @@
 /**
  * Created by seoman on 5/24/16.
  */
+
+import read.*;
+
 public class Main {
     public static void main(String[] args) {
         String experiment = "GDS4395";
+        Network network = NetworkParser.readBinaryNetwork("/home/sch/schmidtju/IntellijProjects/NEAP/networks/all_tissues", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
 //        ExpressionData cancer = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"baseline"}, "Gene ID", "counts");
 //        ExpressionParser.saveExpressionData(cancer, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_cancer");
 //        ExpressionData normal = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"control"}, "Gene ID", "counts");
@@ -16,7 +20,7 @@ public class Main {
             printUsage();
         } else if(args[0].equals("-generateFasta")){
             try{
-
+                GtfParser.generateFastaFromGff3(args[1], args[2], args[3]);
             } catch (Exception e){
                 printUsage();
             }
@@ -48,7 +52,7 @@ public class Main {
 
     private static void printUsage(){
         System.out.println("Usage:");
-        System.out.println("motifs.jar -generateFasta <>");
+        System.out.println("motifs.jar -generateFasta <id file> <gff3 file> <chromosome file dir>");
         System.out.println("motifs.jar -calcCorrelationzScore <fimo output file> <output file> <p-value threshhold> <number of motifs> <ignore zeroes (true|false)>");
         System.out.println("motifs.jar -filterForGo <positive GO file> <negative GO file> <correlation zScore file>");
         System.out.println("motifs.jar -countIntoBins <correlation zScore file>");

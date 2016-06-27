@@ -65,7 +65,7 @@ public class MotifParser {
         }
     }
 
-    public static void filterForGo(Network positivePairs, Network negativePairs, String pathCorrelation){
+    public static void filterForGo(Net positivePairs, Net negativePairs, String pathCorrelation){
         try {
             String line;
             BufferedReader br = new BufferedReader(new FileReader(pathCorrelation));

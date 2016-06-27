@@ -20,13 +20,13 @@ public class NetworkStatistics {
                 dir += "/";
             }
             System.out.println("Parsing " + path + "...");
-            Network network = NetworkParser.parseNetworkFileGZ(path, threshold, 26000);
+            Net net = NetworkParser.parseNetworkFileGZ(path, threshold, 26000);
             String[] split = path.split("/");
             String tissue = split[split.length - 1];
             tissue = tissue.substring(0, tissue.length() - 3);
             System.out.println("Calculating statistics for " + tissue + "...");
-//            calcBasicStats(network, tissue, dir);
-            saveIds(network, tissue, dir);
+//            calcBasicStats(net, tissue, dir);
+            saveIds(net, tissue, dir);
         }
     }
 
@@ -59,7 +59,7 @@ public class NetworkStatistics {
         }
     }
 
-    public static void calcBasicStats(Network network, String tissue, String dir) {
+    public static void calcBasicStats(Net network, String tissue, String dir) {
         int nodes = 0;
         int edges = 0;
         byte[][] net = network.getNet();
@@ -100,8 +100,8 @@ public class NetworkStatistics {
         }
     }
 
-    public static void saveIds(Network network, String tissue, String dir) {
-        Map<Integer, Integer> idMap = network.getIdMap();
+    public static void saveIds(Net net, String tissue, String dir) {
+        Map<Integer, Integer> idMap = net.getIdMap();
         try {
             BufferedWriter out_ids = new BufferedWriter(new FileWriter(dir + tissue + "_ids"));
             for (int gene : idMap.keySet()) {

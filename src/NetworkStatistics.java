@@ -198,12 +198,12 @@ public class NetworkStatistics {
             randomDev += Math.pow(randomT - randomMean, 2);
         }
         randomDev = Math.sqrt(randomDev/iterations);
-        System.out.println("T_up: " + t_up);
+        System.out.println("T: " + t_up);
         System.out.println("randomMean: " + randomMean);
         System.out.println("randomStandardDev: " + randomDev);
 
         double z = (t_up - randomMean)/randomDev;
-        System.out.println("z_up: " + z);
+        System.out.println("Z: " + z);
 
         return z;
     }

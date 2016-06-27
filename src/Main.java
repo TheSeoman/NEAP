@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        String experiment = "GDS4114";
+        String experiment = "GDS4824";
         Network network = NetworkParser.readBinaryNetwork("/home/sch/schmidtju/IntellijProjects/NEAP/networks/thyroid_gland", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
         Set<Integer> genes_up = GeneIdParser.readGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/" + experiment + "_up.tsv");
         Set<Integer> genes_down = GeneIdParser.readGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/" + experiment + "_down.tsv");

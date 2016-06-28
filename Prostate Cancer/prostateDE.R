@@ -6,6 +6,7 @@ countsPath <- "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/"
 runEdgeR <- function(dataSetName, cancerCounts, normalCounts, groupSize){
   counts <- merge(cancerCounts, normalCounts, by = 0)
   rownames(counts) <- counts$Row.names
+  counts[is.na(counts)] <- 0
   counts <- counts[,-1]
   counts <- counts[rowSums(cpm(counts)>1) >= min(groupSize),]
   group <- c(rep(c("cancer"), groupSize[1]), rep(c("normal"), groupSize[2]))
@@ -51,4 +52,9 @@ GDS4395cancer <- read.table(paste(countsPath, "GDS4395_cancer", sep = ""), heade
 GDS4395normal <- read.table(paste(countsPath, "GDS4395_normal", sep = ""), header = TRUE, sep = "\t", row.names = 1)
 
 GDS4395DE <- runEdgeR("GDS4395", GDS4395cancer, GDS4395normal, c(10, 10))
+
+GDS2545cancer <- read.table(paste(countsPath, "GDS2545_cancer", sep = ""), header = TRUE, sep = "\t", row.names = 1)
+GDS2545normal <- read.table(paste(countsPath, "GDS2545_normal", sep = ""), header = TRUE, sep = "\t", row.names = 1)
+
+GDS2545DE <- runEdgeR("GDS2545", GDS2545cancer, GDS2545normal, c(90, 18))
 

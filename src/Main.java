@@ -7,12 +7,8 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        String experiment = "GDS4824";
-        Network network = NetworkParser.readBinaryNetwork("/home/sch/schmidtju/IntellijProjects/NEAP/networks/thyroid_gland", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
-        Set<Integer> genes_up = GeneIdParser.readGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/" + experiment + "_up.tsv");
-        Set<Integer> genes_down = GeneIdParser.readGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/" + experiment + "_down.tsv");
-        double z_up = NetworkStatistics.calcZStatistic(network, genes_up, 100);
-        double z_down = NetworkStatistics.calcZStatistic(network, genes_down, 100);
+
+        runDETStat();
 
 //        System.out.println("down: " + t_down);
 //        ExpressionData cancer = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"baseline"}, "Gene ID", "counts");
@@ -63,5 +59,37 @@ public class Main {
         System.out.println("motifs.jar -calcCorrelationzScore <fimo output file> <output file> <p-value threshhold> <number of motifs> <ignore zeroes (true|false)>");
         System.out.println("motifs.jar -filterForGo <positive GO file> <negative GO file> <correlation zScore file>");
         System.out.println("motifs.jar -countIntoBins <correlation zScore file>");
+    }
+
+    public static void runDETStat(){
+        String[] experiments = new String[]{"GDS4114", "GDS4395", "GDS4824", "GDS5072"};
+        String deDir = "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/";
+
+        String[] networks = new String[]{"all_tissues", "prostate_gland", "thyroid_gland", "mammary_gland", "lung"};
+        String networkDir = "/home/sch/schmidtju/IntellijProjects/NEAP/networks/";
+
+        int iterations = 100;
+
+        for(String net : networks){
+            Network network = NetworkParser.readBinaryNetwork(networkDir + net, "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
+            for(String experiment : experiments){
+                System.out.println(net + "\t" + experiment + "\t" + iterations + " iterations");
+                Set<Integer> genesUp = GeneIdParser.readGeneIds(deDir + experiment + "_up.tsv");
+                if(genesUp.size() == 0){
+                    System.out.println("No significantly up-regulated Genes.");
+                }
+                else {
+                    System.out.println("Up-regulated genes: " + genesUp.size());
+                    double z_up = NetworkStatistics.calcZStatistic(network, genesUp, iterations);
+                }
+                Set<Integer> genesDown = GeneIdParser.readGeneIds(deDir + experiment + "_down.tsv");
+                if(genesDown.size() == 0) {
+                    System.out.println("No significantly down-regulated Genes.");
+                } else {
+                    double z_down = NetworkStatistics.calcZStatistic(network, genesDown, iterations);
+                }
+            }
+
+        }
     }
 }

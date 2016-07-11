@@ -8,8 +8,8 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
-//        ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_healthy.json", "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_tumor.json", "/home/seoman/programs/gdc transfer tool/",  "/home/seoman/Documents/NEAP/geneId2ensembl");
+//        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
+        ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_healthy.json", "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_tumor.json", "/home/seoman/programs/gdc transfer tool/",  "/home/seoman/Documents/NEAP/geneId2ensembl");
 
 //        runDETStat();
 //    String experiment = "GDS2545";

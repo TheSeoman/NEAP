@@ -295,6 +295,8 @@ public class ExpressionParser {
         Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 0, 1);
         Map<String, String> healthy = parseTCGAJSON(healtyJSON);
         Map<String, String> tumor = parseTCGAJSON(tumorJSON);
+        ExpressionData healthyTotal = null;
+        ExpressionData tumorTotal = null;
         for (String case1Id : healthy.keySet()) {
             for (String case2Id : parseTCGAJSON(tumorJSON).keySet()) {
                 if (case1Id.equals(case2Id)) {
@@ -303,8 +305,20 @@ public class ExpressionParser {
                     ExpressionData healthyData = parseTCGAExpressionData(healtyFile, "counts", ensembl2entrez);
                     ExpressionData tumorData = parseTCGAExpressionData(tumorFile, "counts", ensembl2entrez);
                     ExpressionData combined = mergeExpressionData(healthyData, tumorData, 0);
-                    saveExpressionData(combined, "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + case1Id + ".count.tsv");
-                    saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + case1Id + ".fc.tsv");
+                    if(healthyTotal == null){
+                        healthyTotal = healthyData;
+                        tumorTotal = tumorData;
+                    } else {
+                        healthyTotal = mergeExpressionData(healthyTotal, healthyData, 0);
+                        tumorTotal = mergeExpressionData(tumorTotal, tumorData, 0);
+                    }
+
+                    ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
+
+                    saveExpressionData(total, "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/TCGAcases/total.count.tsv");
+
+//                    saveExpressionData(combined, "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + case1Id + ".count.tsv");
+//                    saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + case1Id + ".fc.tsv");
                 }
             }
         }

@@ -1,0 +1,206 @@
+/usr/lib/jvm/java-7-openjdk-amd64/bin/java -Xmx12g -Didea.launcher.port=7533 -Didea.launcher.bin.path=/home/sch/schmidtju/software/idea-IU-133.696/bin -Dfile.encoding=UTF-8 -classpath /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/javazic.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/compilefontconfig.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/management-agent.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunjce_provider.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/zipfs.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/dnsns.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunpkcs11.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/localedata.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/java-atk-wrapper.jar:/home/sch/schmidtju/IntellijProjects/NEAP/out/production/NEAP:/home/sch/schmidtju/software/idea-IU-133.696/lib/idea_rt.jar com.intellij.rt.execution.application.AppMain Main
+Read in genes in network..
+all_tissues	GDS4114	100 iterations
+Up-regulated genes: 247
+T: 16.134326590344873
+randomMean: 0.12402762228106454
+randomStandardDev: 3.1101021822666457
+Z: 5.147836961548152
+Down-regulated genes: 305
+T: 28.315858283771878
+randomMean: -0.16674010930062763
+randomStandardDev: 3.1455155350169353
+Z: 9.054985764970688
+all_tissues	GDS4395	100 iterations
+Up-regulated genes: 4
+T: -0.3907995680543663
+randomMean: -0.16581008871730546
+randomStandardDev: 1.8159195342322467
+Z: -0.12389837495315242
+No significantly down-regulated Genes.
+all_tissues	GDS4824	100 iterations
+Up-regulated genes: 1097
+T: 105.1701537876868
+randomMean: -0.2872782375456712
+randomStandardDev: 5.0598541844156415
+Z: 20.84199033838594
+Down-regulated genes: 627
+T: 29.04389841039367
+randomMean: -0.16400047652468408
+randomStandardDev: 4.588577329619926
+Z: 6.365349603760008
+all_tissues	GDS5072	100 iterations
+Up-regulated genes: 121
+T: 22.718473815748343
+randomMean: 0.051318657729256485
+randomStandardDev: 2.041029056463915
+Z: 11.105748390123342
+Down-regulated genes: 2
+T: Infinity
+randomMean: NaN
+randomStandardDev: NaN
+Z: NaN
+Read in genes in network..
+prostate_gland	GDS4114	100 iterations
+Up-regulated genes: 247
+T: -24.292684245777345
+randomMean: -0.19844768345374222
+randomStandardDev: 5.035817695354938
+Z: -4.784572838001709
+Down-regulated genes: 305
+T: -4.661333801660355
+randomMean: 0.722152915237966
+randomStandardDev: 5.832327077621916
+Z: -0.9230426629456785
+prostate_gland	GDS4395	100 iterations
+Up-regulated genes: 4
+T: -0.9445864781009505
+randomMean: 0.2589186960246128
+randomStandardDev: 1.8834806254740117
+Z: -0.6389793225628109
+No significantly down-regulated Genes.
+prostate_gland	GDS4824	100 iterations
+Up-regulated genes: 1097
+T: 61.28201161410403
+randomMean: 0.40568744804584805
+randomStandardDev: 9.399521384214145
+Z: 6.476534461456284
+Down-regulated genes: 627
+T: 7.448928644826686
+randomMean: 0.808467031143213
+randomStandardDev: 8.119665895458644
+Z: 0.817824489231448
+prostate_gland	GDS5072	100 iterations
+Up-regulated genes: 121
+T: 6.465051127604819
+randomMean: 0.46462578718915
+randomStandardDev: 3.5277786242871385
+Z: 1.7009075623695578
+Down-regulated genes: 2
+T: Infinity
+randomMean: NaN
+randomStandardDev: NaN
+Z: NaN
+Read in genes in network..
+thyroid_gland	GDS4114	100 iterations
+Up-regulated genes: 247
+T: -25.064246285305103
+randomMean: 0.4246768826474662
+randomStandardDev: 4.677384173456442
+Z: -5.449396975471665
+Down-regulated genes: 305
+T: 6.818298770078169
+randomMean: -0.1350726760314081
+randomStandardDev: 5.59276846272424
+Z: 1.2432789757798388
+thyroid_gland	GDS4395	100 iterations
+Up-regulated genes: 4
+T: -1.7094602045752514
+randomMean: 0.324290854720605
+randomStandardDev: 1.434516513569097
+Z: -1.4177257912743406
+No significantly down-regulated Genes.
+thyroid_gland	GDS4824	100 iterations
+Up-regulated genes: 1097
+T: 89.22731564060386
+randomMean: 0.961379477188551
+randomStandardDev: 9.962788164071936
+Z: 8.859561671874365
+Down-regulated genes: 627
+T: 10.093582331170378
+randomMean: 0.14115036850345247
+randomStandardDev: 7.7077767475803105
+Z: 1.29121954210613
+thyroid_gland	GDS5072	100 iterations
+Up-regulated genes: 121
+T: 7.931093133150154
+randomMean: 0.43061288519588237
+randomStandardDev: 3.2989692888216564
+Z: 2.2735829258457065
+Down-regulated genes: 2
+T: Infinity
+randomMean: NaN
+randomStandardDev: NaN
+Z: NaN
+Read in genes in network..
+mammary_gland	GDS4114	100 iterations
+Up-regulated genes: 247
+T: -30.021688840919122
+randomMean: -0.6124269670647731
+randomStandardDev: 4.680650452767994
+Z: -6.28315704635936
+Down-regulated genes: 305
+T: -5.7597265631330234
+randomMean: 0.21438752508608944
+randomStandardDev: 5.345425207590646
+Z: -1.1176125109253634
+mammary_gland	GDS4395	100 iterations
+Up-regulated genes: 4
+T: -0.7448121803624802
+randomMean: 0.15144938102192246
+randomStandardDev: 2.113464645865698
+Z: -0.42407218078506553
+No significantly down-regulated Genes.
+mammary_gland	GDS4824	100 iterations
+Up-regulated genes: 1097
+T: 43.47655933113808
+randomMean: 0.26307364067207806
+randomStandardDev: 10.80901670082619
+Z: 3.9979109003655227
+Down-regulated genes: 627
+T: 12.558114820414483
+randomMean: 0.713896393386186
+randomStandardDev: 7.574869896330504
+Z: 1.5636200474896598
+mammary_gland	GDS5072	100 iterations
+Up-regulated genes: 121
+T: 9.899290179534544
+randomMean: 0.727832068568585
+randomStandardDev: 3.3778618685946937
+Z: 2.7151667142569096
+Down-regulated genes: 2
+T: Infinity
+randomMean: NaN
+randomStandardDev: NaN
+Z: NaN
+Read in genes in network..
+lung	GDS4114	100 iterations
+Up-regulated genes: 247
+T: -17.775359681268753
+randomMean: 0.9728481382045375
+randomStandardDev: 4.5561174394496105
+Z: -4.11495271327732
+Down-regulated genes: 305
+T: -10.38693502682975
+randomMean: 0.4907334106243048
+randomStandardDev: 5.432733686157076
+Z: -2.0022458426723535
+lung	GDS4395	100 iterations
+Up-regulated genes: 4
+T: -1.0748069861151537
+randomMean: -0.007234075693186046
+randomStandardDev: 1.6252038521997045
+Z: -0.6568855402213165
+No significantly down-regulated Genes.
+lung	GDS4824	100 iterations
+Up-regulated genes: 1097
+T: 44.90159755247113
+randomMean: 1.216525931780087
+randomStandardDev: 9.763512581317567
+Z: 4.474319181426796
+Down-regulated genes: 627
+T: 2.154965024051466
+randomMean: 0.6405692287740574
+randomStandardDev: 6.352701918733102
+Z: 0.23838609376770814
+lung	GDS5072	100 iterations
+Up-regulated genes: 121
+T: 7.567163035833462
+randomMean: 0.44018540338419
+randomStandardDev: 3.71332503763594
+Z: 1.9192980846585432
+Down-regulated genes: 2
+T: Infinity
+randomMean: NaN
+randomStandardDev: NaN
+Z: NaN

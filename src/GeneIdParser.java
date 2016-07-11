@@ -25,7 +25,7 @@ public class GeneIdParser {
     public static Set<Integer> generateRandomGeneSet(Set<Integer> allIds, int size) {
         List<Integer> all = new ArrayList<>(allIds);
         Set<Integer> ids = new HashSet<>();
-        Random rand = new Random(System.currentTimeMillis()); // would make this static to the class
+        Random rand = new Random(System.currentTimeMillis());
 
         for (int i = 0; i < size; i++) {
             ids.add(all.remove(rand.nextInt(all.size())));

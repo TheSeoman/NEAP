@@ -1,5 +1,4 @@
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -9,8 +8,8 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-
-        ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_healthy.json", "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_tumor.json", "/home/seoman/programs/gdc transfer tool/",  "/home/seoman/Documents/NEAP/geneId2ensembl");
+        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
+//        ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_healthy.json", "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_tumor.json", "/home/seoman/programs/gdc transfer tool/",  "/home/seoman/Documents/NEAP/geneId2ensembl");
 
 //        runDETStat();
 //    String experiment = "GDS2545";
@@ -66,15 +65,15 @@ public class Main {
 
     public static void runDETStat(){
         String[] experiments = new String[]{"GDS2545"};
-        String deDir = "/home/seoman/Documents/NEAP/Prostate Cancer/R_out/";
+        String deDir = "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/";
 
         String[] networks = new String[]{"all_tissues", "prostate_gland", "thyroid_gland", "mammary_gland", "lung"};
-        String networkDir = "/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/";
+        String networkDir = "/home/sch/schmidtju/IntellijProjects/NEAP/networks/";
 
         int iterations = 100;
 
         for(String net : networks){
-            Network network = NetworkParser.readBinaryNetwork(networkDir + net, "/home/seoman/Documents/NEAP/all_genes.txt");
+            Network network = NetworkParser.readBinaryNetwork(networkDir + net, "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
             for(String experiment : experiments){
                 System.out.println(net + "\t" + experiment + "\t" + iterations + " iterations");
                 Set<Integer> genesUp = GeneIdParser.readGeneIds(deDir + experiment + "_up.tsv");

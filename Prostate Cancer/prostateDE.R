@@ -22,11 +22,15 @@ runEdgeR <- function(dataSetName, cancerCounts, normalCounts, groupSize){
   
   write.table(et$table, file = paste(outPath, dataSetName, "_DE.tsv", sep = ""), sep = "\t", quote = FALSE)
   
-  upGenes <- rownames(et$table[et$table$adj.PValue < 0.05 & et$table$logFC > 0,])
-  downGenes <- rownames(et$table[et$table$adj.PValue < 0.05 & et$table$logFC < 0,])
+#  upGenes <- rownames(et$table[et$table$adj.PValue < 0.05 & et$table$logFC > 0,])
+#  downGenes <- rownames(et$table[et$table$adj.PValue < 0.05 & et$table$logFC < 0,])
+
+  upGenes <- rownames(et$table[et$table$logFC > 1,])
+  downGenes <- rownames(et$table[et$table$logFC < -1,])
   
-  write.table(upGenes, file = paste(outPath, dataSetName, "_up.tsv", sep = ""), quote = FALSE, row.names = FALSE, col.names = FALSE)
-  write.table(downGenes, file = paste(outPath, dataSetName, "_down.tsv", sep = ""), quote = FALSE, row.names = FALSE, col.names = FALSE)
+    
+  write.table(upGenes, file = paste(outPath, dataSetName, "_fcup.tsv", sep = ""), quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(downGenes, file = paste(outPath, dataSetName, "_fcdown.tsv", sep = ""), quote = FALSE, row.names = FALSE, col.names = FALSE)
   et$table
 } 
 

@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.Inflater;
 
 /**
  * Created by Seoman on 22.06.2016.
@@ -136,11 +135,8 @@ public class ExpressionParser {
                 out.write("\t" + sample);
             }
             out.write("\n");
-            int length = ex.getValues()[0].length;
             for (String id : ex.getIdMap().keySet()) {
                 out.write(id);
-                if(id.equals("6548"))
-                    System.out.println("");
                 for (double value : ex.getValues()[ex.getIdMap().get(id)]) {
                     out.write("\t" + value);
                 }
@@ -182,6 +178,163 @@ public class ExpressionParser {
             i++;
         }
         return new ExpressionData(type, valuesArr, idMap, samples);
+    }
+
+    public static ExpressionData parseTCGAExpressionData(String path, String type, Map<String, String> ensembleMapping) {
+        List<double[]> values = new ArrayList<>();
+        Map<String, Integer> idMap = new HashMap<>();
+        String[] samples = new String[]{path.substring(path.lastIndexOf("/") + 1, path.indexOf("."))};
+        int c = 0;
+        try {
+            InputStream fileStream = new FileInputStream(path);
+            InputStream gzipStream = new GZIPInputStream(fileStream);
+            Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+            BufferedReader br = new BufferedReader(decoder);
+            String line;
+            String[] split;
+            while ((line = br.readLine()) != null) {
+                split = line.split("\t");
+                if(split[0].contains(".")){
+                    split[0] = split[0].substring(0, split[0].indexOf("."));
+                }
+                if(!ensembleMapping.containsKey(split[0])){
+                    continue;
+                }
+                String id = ensembleMapping.get(split[0]);
+                double value = Double.parseDouble(split[1]);
+                if(!idMap.containsKey(id)){
+                    idMap.put(id, c);
+                    values.add(new double[]{value});
+                    c++;
+                } else {
+                    double prevValue = values.get(idMap.get(id))[0];
+                    if(value > prevValue){
+                        values.get(idMap.get(id))[0] = value;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        double[][] valuesArr = new double[values.size()][samples.length];
+        int i = 0;
+        for (double[] value : values) {
+            valuesArr[i] = value;
+            i++;
+        }
+        return new ExpressionData(type, valuesArr, idMap, samples);
+    }
+
+    public static Map<String, String> parseTCGAJSON(String path){
+        Map<String , String> caseToFile = new HashMap<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line, fileName = "", caseId = "";
+            while ((line = br.readLine()) != null) {
+                if(line.contains("file_name")){
+                    fileName = line.split("\"")[3];
+                } else if(line.contains("case_id")){
+                    caseId = line.split("\"")[3];
+                    caseToFile.put(caseId, fileName);
+                }
+            }
+            } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return caseToFile;
+    }
+
+    public static void saveAverageFoldChange(ExpressionData data, int[] cols1, int[] cols2, String path){
+        double[] fcs = ExpressionStatistics.calcAverageFoldChange(data, cols1, cols2);
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(path));
+            for(String id : data.getIdMap().keySet()){
+                double fc = fcs[data.getIdMap().get(id)];
+                if(fc != -1){
+                    out.write(id + "\t" + Math.log(fc) + "\n");
+                }
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping){
+        Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 0, 1);
+        Map<String, String> healthy = parseTCGAJSON(healtyJSON);
+        Map<String, String> tumor = parseTCGAJSON(tumorJSON);
+        for(String case1Id : healthy.keySet()){
+            for(String case2Id : parseTCGAJSON(tumorJSON).keySet()){
+                if(case1Id.equals(case2Id)){
+                    String healtyFile = TCGAdir + healthy.get(case1Id);
+                    String tumorFile = TCGAdir + tumor.get(case2Id);
+                    ExpressionData healthyData = parseTCGAExpressionData(healtyFile, "counts", ensembl2entrez);
+                    ExpressionData tumorData = parseTCGAExpressionData(tumorFile, "counts", ensembl2entrez);
+                    ExpressionData combined = mergeExpressionData(healthyData, tumorData, 0);
+                    saveExpressionData(combined, "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + case1Id + ".count.tsv");
+                    saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + case1Id + ".fc.tsv");
+                }
+            }
+        }
+    }
+
+    public static ExpressionData mergeExpressionData(ExpressionData data1, ExpressionData data2, double defaultValue){
+        ExpressionData data = null;
+        if(!data1.getType().equals(data2.getType())){
+            System.out.println("Can't merge Expression data of different types");
+        } else {
+            Map<String, Integer> idMap = new HashMap<>();
+            int data1len = data1.getSamples().length;
+            int data2len = data2.getSamples().length;
+            String[] samples = new String[data1len + data2len];
+            for(int i = 0; i < data1len; i++){
+                samples[i] = data1.getSamples()[i];
+            }
+            for(int i = 0; i < data2len; i++){
+                samples[i + data1len] = data2.getSamples()[i];
+            }
+            int c = 0;
+            for(String id1 : data1.getIdMap().keySet()){
+                idMap.put(id1, c);
+                c++;
+            }
+            for(String id2 : data2.getIdMap().keySet()){
+                if(!idMap.containsKey(id2)){
+                    idMap.put(id2, c);
+                    c++;
+                }
+            }
+            double[][] values = new double[c + 1][data1len + data2len];
+            c = 0;
+            for(String id : idMap.keySet()){
+                double[] value = new double[data1len + data2len];
+                if(data1.getIdMap().containsKey(id)){
+                    double[] data1value = data1.getValues()[data1.getIdMap().get(id)];
+                    for(int i = 0; i < data1len; i++){
+                        values[c][i] = data1value[i];
+                    }
+                } else {
+                    for(int i = 0; i < data1len; i++){
+                        values[c][i] = defaultValue;
+                    }
+                }
+                if(data2.getIdMap().containsKey(id)){
+                    double[] data2value = data2.getValues()[data1.getIdMap().get(id)];
+                    for(int i = 0; i < data2len; i++){
+                        values[c][i + data1len] = data2value[i];
+                    }
+                } else {
+                    for(int i = 0; i < data1len; i++){
+                        values[c][i + data1len] = defaultValue;
+                    }
+                }
+                c++;
+            }
+            data = new ExpressionData("count", values, idMap, samples);
+        }
+        return data;
     }
 
 }

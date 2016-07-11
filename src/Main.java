@@ -1,4 +1,5 @@
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -8,13 +9,15 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-//        runDETStat();
 
-    String experiment = "GDS2545";
-        ExpressionData cancer = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"prostate tumor"}, "Gene ID", "counts");
-        ExpressionParser.saveExpressionData(cancer, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_cancer");
-        ExpressionData normal = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"normal prostate tissue"}, "Gene ID", "counts");
-        ExpressionParser.saveExpressionData(normal, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_normal");
+        ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_healthy.json", "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_tumor.json", "/home/seoman/programs/gdc transfer tool/",  "/home/seoman/Documents/NEAP/geneId2ensembl");
+
+//        runDETStat();
+//    String experiment = "GDS2545";
+//        ExpressionData cancer = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"prostate tumor"}, "Gene ID", "counts");
+//        ExpressionParser.saveExpressionData(cancer, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_cancer");
+//        ExpressionData normal = ExpressionParser.parseSoftGz("/home/seoman/Documents/NEAP/Prostate Cancer/" + experiment + "_full.soft.gz", new String[]{"normal prostate tissue"}, "Gene ID", "counts");
+//        ExpressionParser.saveExpressionData(normal, "/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_normal");
 //        ExpressionData data = ExpressionParser.parseExpressionData("/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/" + experiment + "_cancer", "count");
 //        ExpressionStatistics.saveExpressionCorrelations(data, "/home/seoman/Documents/NEAP/Prostate Cancer/Correlations/" + experiment + "_cancer_cor");
 //        ExpressionData dat = ExpressionParser.parseExpressionData("/home/seoman/Documents/NEAP/Prostate Cancer/FilteredCountFiles/GDS4114_cancer", "counts");
@@ -62,16 +65,16 @@ public class Main {
     }
 
     public static void runDETStat(){
-        String[] experiments = new String[]{"GDS4114", "GDS4395", "GDS4824", "GDS5072"};
-        String deDir = "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/R_out/";
+        String[] experiments = new String[]{"GDS2545"};
+        String deDir = "/home/seoman/Documents/NEAP/Prostate Cancer/R_out/";
 
         String[] networks = new String[]{"all_tissues", "prostate_gland", "thyroid_gland", "mammary_gland", "lung"};
-        String networkDir = "/home/sch/schmidtju/IntellijProjects/NEAP/networks/";
+        String networkDir = "/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/";
 
         int iterations = 100;
 
         for(String net : networks){
-            Network network = NetworkParser.readBinaryNetwork(networkDir + net, "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
+            Network network = NetworkParser.readBinaryNetwork(networkDir + net, "/home/seoman/Documents/NEAP/all_genes.txt");
             for(String experiment : experiments){
                 System.out.println(net + "\t" + experiment + "\t" + iterations + " iterations");
                 Set<Integer> genesUp = GeneIdParser.readGeneIds(deDir + experiment + "_up.tsv");

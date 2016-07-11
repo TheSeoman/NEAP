@@ -20,31 +20,6 @@ import java.util.zip.GZIPInputStream;
  * Created by schmidtju on 30.05.16.
  */
 public class GtfParser {
-    public static Map<String, String> parseMappingFile(String mappingPath, String idPath, int entrezCol, int ensemblCol) {
-        Map<String, String> ensembl2Entrez = new HashMap<>();
-        Set<String> entrezIds = new HashSet<>();
-        try {
-            String line;
-            String[] split;
-            BufferedReader br = new BufferedReader(new FileReader(idPath));
-            while ((line = br.readLine()) != null) {
-                entrezIds.add(line);
-            }
-            br.close();
-            br = new BufferedReader(new FileReader(mappingPath));
-            while ((line = br.readLine()) != null) {
-                split = line.split("\t");
-
-                if (split.length > Math.max(entrezCol, ensemblCol) && entrezIds.contains(split[entrezCol])) {
-                    ensembl2Entrez.put(split[ensemblCol], split[entrezCol]);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ensembl2Entrez;
-    }
-
     public static void generateFastaFromGff3(String idPath, String gff3Path, String fastaPath) {
         Set<String> entrezIds = new HashSet<>();
         try {

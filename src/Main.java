@@ -8,8 +8,16 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-//        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
-        ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_healthy.json", "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_prostate_tumor.json", "/home/seoman/programs/gdc transfer tool/",  "/home/seoman/Documents/NEAP/geneId2ensembl");
+        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
+
+        String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast"};
+        for(String tissue : tissues) {
+            ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_healthy.json",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_tumor.json",
+                    "/home/seoman/programs/gdc transfer tool/", "/home/seoman/Documents/NEAP/geneId2ensembl",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + tissue + "/",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + tissue + "/");
+        }
 
 //        runDETStat();
 //    String experiment = "GDS2545";

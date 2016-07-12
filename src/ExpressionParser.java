@@ -257,12 +257,13 @@ public class ExpressionParser {
 
     public static void saveAverageFoldChange(ExpressionData data, int[] cols1, int[] cols2, String path) {
         double[] fcs = ExpressionStatistics.calcAverageFoldChange(data, cols1, cols2);
+        double log2 = Math.log(2);
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(path));
             for (String id : data.getIdMap().keySet()) {
                 double fc = fcs[data.getIdMap().get(id)];
                 if (fc != -1) {
-                    out.write(id + "\t" + Math.log(fc) + "\n");
+                    out.write(id + "\t" + Math.log(fc)/log2 + "\n");
                 }
             }
             out.close();
@@ -271,7 +272,7 @@ public class ExpressionParser {
         }
     }
 
-    public static void savePatientsFoldChanges(String patientsDir) {
+    public static void savePatientsFoldChanges(String patientsDir, String outDir) {
         File[] files = new File(patientsDir).listFiles();
         Set<String> patientIds = new HashSet<>();
         for (File file : files) {
@@ -280,18 +281,18 @@ public class ExpressionParser {
             }
         }
         for(String id : patientIds){
-            ExpressionData healtyCounts = parseExpressionData(patientsDir + id + ".normal", "counts", true);
             ExpressionData tumorCounts = parseExpressionData(patientsDir + id + ".tumor", "counts", true);
+            ExpressionData healtyCounts = parseExpressionData(patientsDir + id + ".normal", "counts", true);
             ExpressionData combined = mergeExpressionData(healtyCounts, tumorCounts, 0);
 
-            saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/patient fcs/" + id + ".fc.tsv");
+            saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "outDir" + id + ".fc.tsv");
 
 
         }
     }
 
 
-    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping) {
+    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping, String countDir, String fcDir) {
         Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 0, 1);
         Map<String, String> healthy = parseTCGAJSON(healtyJSON);
         Map<String, String> tumor = parseTCGAJSON(tumorJSON);
@@ -313,15 +314,13 @@ public class ExpressionParser {
                         tumorTotal = mergeExpressionData(tumorTotal, tumorData, 0);
                     }
 
-                    ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
-
-                    saveExpressionData(total, "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/TCGAcases/total.count.tsv");
-
-//                    saveExpressionData(combined, "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + case1Id + ".count.tsv");
-//                    saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + case1Id + ".fc.tsv");
+                    saveExpressionData(combined, countDir + case1Id + ".count.tsv");
+                    saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, fcDir + case1Id + ".fc.tsv");
                 }
             }
         }
+        ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
+        saveExpressionData(total, countDir + "total.count.tsv");
     }
 
     public static ExpressionData mergeExpressionData(ExpressionData data1, ExpressionData data2, double defaultValue) {
@@ -344,13 +343,13 @@ public class ExpressionParser {
                 idMap.put(id1, c);
                 c++;
             }
+            double[][] values = new double[c + 1][data1len + data2len];
             for (String id2 : data2.getIdMap().keySet()) {
                 if (!idMap.containsKey(id2)) {
                     idMap.put(id2, c);
                     c++;
                 }
             }
-            double[][] values = new double[c + 1][data1len + data2len];
             c = 0;
             for (String id : idMap.keySet()) {
                 double[] value = new double[data1len + data2len];
@@ -365,7 +364,7 @@ public class ExpressionParser {
                     }
                 }
                 if (data2.getIdMap().containsKey(id)) {
-                    double[] data2value = data2.getValues()[data1.getIdMap().get(id)];
+                    double[] data2value = data2.getValues()[data2.getIdMap().get(id)];
                     for (int i = 0; i < data2len; i++) {
                         values[c][i + data1len] = data2value[i];
                     }
@@ -376,7 +375,7 @@ public class ExpressionParser {
                 }
                 c++;
             }
-            data = new ExpressionData("count", values, idMap, samples);
+            data = new ExpressionData("counts", values, idMap, samples);
         }
         return data;
     }

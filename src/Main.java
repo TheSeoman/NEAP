@@ -8,7 +8,7 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
+//        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
 
         String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast"};
         for(String tissue : tissues) {

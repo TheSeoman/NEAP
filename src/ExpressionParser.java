@@ -283,7 +283,7 @@ public class ExpressionParser {
         for(String id : patientIds){
             ExpressionData tumorCounts = parseExpressionData(patientsDir + id + ".tumor", "counts", true);
             ExpressionData healtyCounts = parseExpressionData(patientsDir + id + ".normal", "counts", true);
-            ExpressionData combined = mergeExpressionData(healtyCounts, tumorCounts, 0);
+            ExpressionData combined = mergeExpressionData(tumorCounts, healtyCounts, 0);
 
             saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "outDir" + id + ".fc.tsv");
 
@@ -314,13 +314,13 @@ public class ExpressionParser {
                         tumorTotal = mergeExpressionData(tumorTotal, tumorData, 0);
                     }
 
-                    saveExpressionData(combined, countDir + case1Id + ".count.tsv");
-                    saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, fcDir + case1Id + ".fc.tsv");
+//                    saveExpressionData(combined, countDir + case1Id + ".count.tsv");
+                    saveAverageFoldChange(combined, new int[]{1}, new int[]{0}, fcDir + case1Id + ".fc.tsv");
                 }
             }
         }
-        ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
-        saveExpressionData(total, countDir + "total.count.tsv");
+//        ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
+//        saveExpressionData(total, countDir + "total.count.tsv");
     }
 
     public static ExpressionData mergeExpressionData(ExpressionData data1, ExpressionData data2, double defaultValue) {

@@ -67,7 +67,6 @@ public class MotifStatistics {
                 if(Double.isNaN(z[i][j])){
                     continue;
                 }
-//                z[i][j] = 0.5 * Math.log((1 + pccs[i][j]) / (1 - pccs[i][j]));
                 mean += z[i][j];
                 c++;
             }

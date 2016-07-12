@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * Created by seoman on 6/27/16.
  */
@@ -26,6 +28,10 @@ public class Statistics {
     }
 
     public static double calculatePCCIgnoreZero(double[] v1, double[] v2) {
+        if (v1.length != v2.length) {
+            System.out.println("Different Vector lengths");
+            return Double.NaN;
+        }
         double v1sum = 0;
         double v2sum = 0;
         double pcc = 0;
@@ -53,5 +59,39 @@ public class Statistics {
 
         pcc = q / (Math.sqrt(d1) * Math.sqrt(d2));
         return pcc;
+    }
+
+    public static double[] normalize(double[] pccs) {
+        double[] z = new double[pccs.length];
+        z = Arrays.copyOf(pccs, pccs.length);
+
+        double mean = 0;
+        int c = 0;
+        for (int i = 0; i < pccs.length; i++) {
+            if (Double.isNaN(z[i])) {
+                continue;
+            }
+            mean += z[i];
+            c++;
+        }
+
+        mean /= c;
+        double sdev = 0;
+        for (int i = 0; i < pccs.length; i++) {
+            if (Double.isNaN(z[i])) {
+                continue;
+            }
+            z[i] -= mean;
+            sdev += Math.pow(z[i], 2);
+
+        }
+        sdev = Math.sqrt(sdev / (c - 1));
+        for (int i = 0; i < pccs.length; i++) {
+            if (Double.isNaN(z[i])) {
+                continue;
+            }
+            z[i] /= sdev;
+        }
+        return z;
     }
 }

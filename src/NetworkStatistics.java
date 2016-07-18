@@ -208,4 +208,27 @@ public class NetworkStatistics {
         return z;
     }
 
+    public static void calculateMcSubnet(Network network, HashMap<Integer, Integer> aberrantCount, double edgeWeightThreshhold, int aberrantThreshhold){
+        Set<Integer> visited = new HashSet<>();
+        List<Set<Integer>> subsets = new ArrayList<Set<Integer>>();
+
+        for(int id1 : network.genMap.keySet()){
+            if(visited.contains(id1)){
+                continue;
+            }
+            Set<Integer> subset = new HashSet<>();
+            subset.add(id1);
+            for(int id2 : network.genMap.keySet()){
+                if(visited.contains(id2)){
+                    break;
+                }
+                if(network.getEdge(id1, id2) >= edgeWeightThreshhold && aberrantCount.get(id2) >= aberrantThreshhold){
+
+                }
+            }
+
+        }
+
+    }
+
 }

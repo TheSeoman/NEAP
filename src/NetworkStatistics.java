@@ -211,6 +211,7 @@ public class NetworkStatistics {
     public static void calculateMcSubnet(Network network, HashMap<Integer, Integer> aberrantCount, double edgeWeightThreshhold, int aberrantThreshhold){
         Set<Integer> visited = new HashSet<>();
         List<Set<Integer>> subsets = new ArrayList<Set<Integer>>();
+        List<Integer> patients = new ArrayList<>();
 
         for(int id1 : network.genMap.keySet()){
             if(visited.contains(id1)){
@@ -226,9 +227,6 @@ public class NetworkStatistics {
 
                 }
             }
-
         }
-
     }
-
 }

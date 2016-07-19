@@ -10,6 +10,8 @@ public class Main {
 
 //        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/");
 
+//        ExpressionParser.testPrediction("/home/seoman/Documents/NEAP/Prostate Cancer/GIANT_PRAD.prediction1", "/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map");
+
         String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast"};
         for(String tissue : tissues) {
             ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_healthy.json",

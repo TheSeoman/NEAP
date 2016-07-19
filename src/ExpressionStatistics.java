@@ -52,8 +52,6 @@ public class ExpressionStatistics {
             for (int j = 0; j < data.getValues().length; j++) {
                 values[j][i] = data.getValues()[j][i] / libSize[i];
             }
-
-
         }
 
         double[] fc = new double[data.getValues().length];

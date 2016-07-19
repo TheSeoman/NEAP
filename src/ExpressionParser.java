@@ -272,6 +272,31 @@ public class ExpressionParser {
         }
     }
 
+    public static void saveTotalFoldChanges(ExpressionData data, int offset, String path) {
+        double[][] fcs = new double[offset][data.getValues().length];
+        for(int i = 0; i < offset; i++){
+            fcs[i] = ExpressionStatistics.calcAverageFoldChange(data, new int[]{i}, new int[]{offset + 1});
+        }
+        double log2 = Math.log(2);
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(path));
+            for (String id : data.getIdMap().keySet()) {
+                out.write(id);
+                for(int i = 0; i < offset; i++){
+                    double fc = fcs[i][data.getIdMap().get(id)];
+                    if(fc > 0)
+                        out.write("\t" + Math.log(fcs[i][data.getIdMap().get(id)])/log2);
+                    else
+                        out.write("\t0");
+                }
+                out.write("\n");
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void savePatientsFoldChanges(String patientsDir, String outDir) {
         File[] files = new File(patientsDir).listFiles();
         Set<String> patientIds = new HashSet<>();
@@ -286,8 +311,6 @@ public class ExpressionParser {
             ExpressionData combined = mergeExpressionData(tumorCounts, healtyCounts, 0);
 
             saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "outDir" + id + ".fc.tsv");
-
-
         }
     }
 
@@ -314,13 +337,14 @@ public class ExpressionParser {
                         tumorTotal = mergeExpressionData(tumorTotal, tumorData, 0);
                     }
 
-//                    saveExpressionData(combined, countDir + case1Id + ".count.tsv");
+                    saveExpressionData(combined, countDir + case1Id + ".count.tsv");
                     saveAverageFoldChange(combined, new int[]{1}, new int[]{0}, fcDir + case1Id + ".fc.tsv");
                 }
             }
         }
-//        ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
-//        saveExpressionData(total, countDir + "total.count.tsv");
+        ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
+        saveTotalFoldChanges(total, total.getSamples().length/2, fcDir + "total.fc.tsv");
+        saveExpressionData(total, countDir + "total.count.tsv");
     }
 
     public static ExpressionData mergeExpressionData(ExpressionData data1, ExpressionData data2, double defaultValue) {
@@ -380,4 +404,55 @@ public class ExpressionParser {
         return data;
     }
 
+
+    public static void testPrediction(String predFile, String patMap){
+        HashMap<String, String> patientMap = new HashMap<>();
+        HashMap<String, String> predictionMap = new HashMap<>();
+        HashMap<String, Double> scoreMap = new HashMap<>();
+        int tp = 0, tn = 0, fp = 0, fn = 0;
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(patMap));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split("\t");
+                String patientId = split[0];
+                String disease = split[1];
+                patientMap.put(patientId, disease);
+            }
+            br = new BufferedReader(new FileReader(predFile));
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split("\t");
+                String patientId = split[0];
+                String disease = split[3];
+                double score = Double.parseDouble(split[2]);
+                predictionMap.put(patientId, disease);
+                scoreMap.put(patientId, score);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(String id : patientMap.keySet()){
+            if(patientMap.get(id).equals("PRAD")){
+                if(predictionMap.get(id).equals("PRAD") || predictionMap.get(id).equals("Prostate_Cancer")){
+                    tp++;
+                } else {
+                    fn++;
+                }
+            } else {
+                if(predictionMap.get(id).equals("PRAD") || predictionMap.get(id).equals("Prostate_Cancer")){
+                    fp++;
+                } else {
+                    tn++;
+                }
+            }
+        }
+        System.out.println("True Positives: " + tp);
+        System.out.println("True Negatives: " + tn);
+        System.out.println("False Positives: " + fp);
+        System.out.println("False Negatives: " + fn);
+    }
 }

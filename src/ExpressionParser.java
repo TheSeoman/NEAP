@@ -310,7 +310,7 @@ public class ExpressionParser {
             ExpressionData healtyCounts = parseExpressionData(patientsDir + id + ".normal", "counts", true);
             ExpressionData combined = mergeExpressionData(tumorCounts, healtyCounts, 0);
 
-            saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, "outDir" + id + ".fc.tsv");
+            saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, outDir + id + ".fc.tsv");
         }
     }
 

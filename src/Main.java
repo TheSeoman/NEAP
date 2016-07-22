@@ -8,7 +8,10 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/", "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/");
+        ExpressionParser.saveRapidMinerFoldChanges("/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/",
+                "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/training.fcs.tsv",
+                GeneIdParser.parseGeneIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1));
+//        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/", "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/");
 
 //        ExpressionParser.testPrediction("/home/seoman/Documents/NEAP/Prostate Cancer/GIANT_PRAD.prediction1", "/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map");
 
@@ -18,7 +21,8 @@ public class Main {
 //                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_tumor.json",
 //                    "/home/seoman/programs/gdc transfer tool/", "/home/seoman/Documents/NEAP/geneId2ensembl",
 //                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + tissue + "/",
-//                    "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + tissue + "/");
+//                    "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + tissue + "/",
+//                    "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/");
 //        }
 
 //        runDETStat();
@@ -86,7 +90,7 @@ public class Main {
             Network network = NetworkParser.readBinaryNetwork(networkDir + net, "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
             for(String experiment : experiments){
                 System.out.println(net + "\t" + experiment + "\t" + iterations + " iterations");
-                Set<Integer> genesUp = GeneIdParser.readGeneIds(deDir + experiment + "_up.tsv");
+                Set<Integer> genesUp = GeneIdParser.parseGeneIds(deDir + experiment + "_up.tsv");
                 if(genesUp.size() == 0){
                     System.out.println("No significantly up-regulated Genes.");
                 }
@@ -94,7 +98,7 @@ public class Main {
                     System.out.println("Up-regulated genes: " + genesUp.size());
                     double z_up = NetworkStatistics.calcZStatistic(network, genesUp, iterations);
                 }
-                Set<Integer> genesDown = GeneIdParser.readGeneIds(deDir + experiment + "_down.tsv");
+                Set<Integer> genesDown = GeneIdParser.parseGeneIds(deDir + experiment + "_down.tsv");
                 if(genesDown.size() == 0) {
                     System.out.println("No significantly down-regulated Genes.");
                 } else {

@@ -15,15 +15,14 @@ public class AberrantGenes {
         File pradPatientsSet1 = new File(path+"PRAD_patients_set_1.txt");
         File[] tcgaPatients = new File(path+"NEAP/Prostate Cancer/FoldChange/prostate").listFiles();
         File malacardsFile = new File(path+"NEAP/Prostate Cancer/Malacards/all_unique_prad.txt");
-
+        File allGenesGIANTNetworks = new File(path+"NEAP/Prostate cancer/all_genes.txt");
 
         double threshold = 1.0;
 
-        new AberrantGenes(pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, threshold);
+        new AberrantGenes(allGenesGIANTNetworks, pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, threshold);
     }
 
     /**
-     *
      * @param pradPatientsFile
      * @param patientFolder
      * @param tcgaFolder
@@ -31,7 +30,8 @@ public class AberrantGenes {
      * @param threshold
      * @throws IOException
      */
-    public AberrantGenes(File pradPatientsFile, File[] patientFolder, File[] tcgaFolder, File malacardsFile, double threshold) throws IOException {
+    public AberrantGenes(File allGenesFile, File pradPatientsFile, File[] patientFolder, File[] tcgaFolder, File malacardsFile, double threshold) throws IOException {
+        receiveAllGenesGIANT(allGenesFile);
         receivePradPatients(pradPatientsFile);
         setNumberOfPatients(getNumberOfUniquePatients(tcgaFolder, patientFolder));
         parseTCGAPatientsAndSet(patientFolder, tcgaFolder, threshold);
@@ -46,28 +46,45 @@ public class AberrantGenes {
             malacardsGenes.add(id);
         }
 
-        int c = 0;
-        for (Integer i : malacardsGenes) {
-            if (aberrantGeneMap.containsKey(i)) {
-                c++;
-            } else {
-                System.out.println(i);
-            }
-        }
-        System.out.println(c + "!!");
+//        int c = 0;
+//        for (Integer i : malacardsGenes) {
+//            if (aberrantGeneMap.containsKey(i)) {
+//                c++;
+//            } else {
+//                System.out.println(i);
+//            }
+//        }
+//        System.out.println(c+"!!");
 
         bur.close();
     }
 
-    private HashMap<Integer, int[]> aberrantGeneMap;
+    public HashMap<Integer, int[]> aberrantGeneMap;
     private HashMap<String, Integer> patientNumberMap;
+    private HashSet<Integer> allGenes;
     private HashSet<String> pradPatientSet;
     private int NUMBER_OF_PATIENTS;
 
+    /**
+     * @param f
+     * @return set of all genes in GIANT ALL network
+     * @throws IOException
+     */
+    private HashSet<Integer> receiveAllGenesGIANT(File f) throws IOException {
+        allGenes = new HashSet<Integer>();
 
+        BufferedReader bur = openReader(f);
+
+        String sLine = null;
+
+        while ((sLine = bur.readLine()) != null) {
+            allGenes.add(Integer.parseInt(sLine.trim()));
+        }
+
+        return allGenes;
+    }
 
     /**
-     *
      * @param pradPatientsFile
      * @return Set with PRAD patients in pradPatientsFile
      * @throws IOException
@@ -108,9 +125,11 @@ public class AberrantGenes {
 
             while ((sLine = bur.readLine()) != null) {
                 int id = Integer.parseInt(sLine.split("\\t")[0]);
-                double fcValue = Double.parseDouble(sLine.split("\\t")[1]);
+                if (allGenes.contains(id)) {
+                    double fcValue = Double.parseDouble(sLine.split("\\t")[1]);
 
-                this.fillMap(aberrantGeneMap, patient, id, fcValue, threshold);
+                    this.fillMap(aberrantGeneMap, patient, id, fcValue, threshold);
+                }
             }
 
             bur.close();
@@ -127,16 +146,17 @@ public class AberrantGenes {
 
                 while ((sLine = bur.readLine()) != null) {
                     int id = Integer.parseInt(sLine.split("\\t")[0]);
-                    double fcValue = Double.parseDouble(sLine.split("\\t")[1]);
+                    if (allGenes.contains(id)) {
+                        double fcValue = Double.parseDouble(sLine.split("\\t")[1]);
 
-                    this.fillMap(aberrantGeneMap, patient, id, fcValue, threshold);
+                        this.fillMap(aberrantGeneMap, patient, id, fcValue, threshold);
+                    }
                 }
 
                 bur.close();
             }
         }
 
-        System.out.println(aberrantGeneMap.size());
         return aberrantGeneMap;
     }
 

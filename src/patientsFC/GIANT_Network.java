@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Stefan on 22.07.2016.
@@ -17,7 +18,7 @@ public class GIANT_Network {
 
         GIANT_Network n = new GIANT_Network(pathGIANT, all_genes);
 
-        System.out.println("!! "+genMap.size());
+        System.out.println("network successfully read...");
 
         String path = "C:/Users/Stefan/Desktop/BLOCKPHASE/";
         File[] patientFolder = new File(path+"NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/").listFiles();
@@ -28,9 +29,38 @@ public class GIANT_Network {
 
         double threshold = 1.0;
 
-        AberrantGenes abGenes = new AberrantGenes(allGenesGIANTNetworks, pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, threshold);
+        boolean withPatientSet = false;
 
-        System.out.println(abGenes.aberrantGeneMap.size() + "...");
+        double aberrantThreshold = 0.75;
+
+        AberrantGenes abGenes = new AberrantGenes(allGenesGIANTNetworks, pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, withPatientSet, threshold, aberrantThreshold);
+
+        System.out.println(abGenes.aberrantGeneMap.size()+"...");
+
+        int c = 0;
+
+        for (Integer i : abGenes.aberrantGeneMap.keySet()) {
+            if (neighborsGene(n, abGenes, i, 0.7).size() > 0) {
+                System.out.println(i+" :"+neighborsGene(n, abGenes, i, 0.7).size()+neighborsGene(n, abGenes, i, 0.7));
+                c++;
+            }
+        }
+
+        System.out.println("Aberrent Genes with Aberrent neighbors = "+c);
+
+        printArray(abGenes.aberrantGeneMap, 2950);
+        printArray(abGenes.aberrantGeneMap, 6288);
+        printArray(abGenes.aberrantGeneMap, 6425);
+
+    }
+
+    private static void printArray(HashMap<Integer, int[]> map, int gene) {
+        int[] a = map.get(gene);
+        System.out.print(gene+" : ");
+        for (int k = 0; k < a.length; k++) {
+            System.out.print(a[k]+" ");
+        }
+        System.out.println("");
     }
 
     private int geneSize;
@@ -44,6 +74,16 @@ public class GIANT_Network {
         geneSize = genMap.size();
         input = new ByteBuffer[geneSize];
         readRaf(path);
+    }
+
+    private static HashSet<Integer> neighborsGene(GIANT_Network n, AberrantGenes abGenes, Integer geneID, double edgeWeightThreshold) {
+        HashSet<Integer> neighbors = new HashSet<Integer>();
+        for (Integer i : abGenes.aberrantGeneMap.keySet()) {
+            if (n.getEdge(geneID, i) >= edgeWeightThreshold) {
+                neighbors.add(i);
+            }
+        }
+        return neighbors;
     }
 
     	/*
@@ -80,7 +120,7 @@ public class GIANT_Network {
     }
 
 	/*
-	 * readRaf: read in as many bytes as necessary and save them in ByteBuffer
+     * readRaf: read in as many bytes as necessary and save them in ByteBuffer
 	 * array array length: number of nodes in network buffer lengths:
 	 * incrementing=> half matrix
 	 */
@@ -108,7 +148,7 @@ public class GIANT_Network {
     }
 
 	/*
-	 * getEdge: inputs two entrezIDs and returns the corresponding edge weight
+     * getEdge: inputs two entrezIDs and returns the corresponding edge weight
 	 */
 
     public double getEdge(Integer a, Integer b) {

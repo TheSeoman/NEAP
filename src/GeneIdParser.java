@@ -7,7 +7,7 @@ import java.util.*;
  * Created by schmidtju on 27.06.16.
  */
 public class GeneIdParser {
-    public static Set<Integer> readGeneIds(String path) {
+    public static Set<Integer> parseGeneIds(String path) {
         Set<Integer> ids = new HashSet<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
@@ -15,6 +15,24 @@ public class GeneIdParser {
             while ((line = br.readLine()) != null) {
                 int id = Integer.parseInt(line.trim());
                 ids.add(id);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
+    public static Set<String> parseGeneIds(String path, int col) {
+        Set<String> ids = new HashSet<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split("\t");
+                if(split.length > col) {
+                    String id = split[col];
+                    ids.add(id);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

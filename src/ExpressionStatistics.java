@@ -42,35 +42,40 @@ public class ExpressionStatistics {
         }
     }
 
-    public static double[] calcAverageFoldChange(ExpressionData data, int[] cols1, int[] cols2) {
-        double[][] values = new double[data.getValues().length][data.getSamples().length];
-        double[] libSize = new double[data.getSamples().length];
-        for (int i = 0; i < data.getSamples().length; i++) {
+    public static double[] calcFoldChange(ExpressionData data, int[] cols) {
+        double[][] values = new double[data.getValues().length][2];
+        double[] libSize = new double[2];
+        double maxLibSize = 0;
+        for(int i = 0; i < 2; i++) {
             for (int j = 0; j < data.getValues().length; j++) {
-                libSize[i] += data.getValues()[j][i];
+                libSize[i] += data.getValues()[j][cols[i]];
             }
+            maxLibSize = Math.max(maxLibSize, libSize[i]);
+        }
+        for(int i = 0; i < 2; i++) {
+            double scale = libSize[i]/maxLibSize;
             for (int j = 0; j < data.getValues().length; j++) {
-                values[j][i] = data.getValues()[j][i] / libSize[i];
+                values[j][i] = data.getValues()[j][cols[i]] /scale;
             }
         }
 
         double[] fc = new double[data.getValues().length];
 
         for (int i = 0; i < data.getValues().length; i++) {
-            double sum1 = 0;
-            for (int c : cols1) {
-                sum1 += values[i][c];
-            }
-            double sum2 = 0;
-            for (int c : cols2) {
-                sum2 += values[i][c];
-            }
-            if (sum1 != 0 && sum2 != 0) {
-                fc[i] = sum1 / sum2;
+            if (values[i][0] != 0 && values[i][1] != 0) {
+                fc[i] = values[i][0] / values[i][1];
             } else {
                 fc[i] = -1;
             }
         }
         return fc;
+    }
+
+    public static double[][] calcPairwiseFoldChanges(ExpressionData data, int offset) {
+        double[][] fcs = new double[offset][data.getValues().length];
+        for (int i = 0; i < offset; i++) {
+            fcs[i] = ExpressionStatistics.calcFoldChange(data, new int[]{offset + i, i});
+        }
+        return fcs;
     }
 }

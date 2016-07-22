@@ -255,15 +255,15 @@ public class ExpressionParser {
         return caseToFile;
     }
 
-    public static void saveAverageFoldChange(ExpressionData data, int[] cols1, int[] cols2, String path) {
-        double[] fcs = ExpressionStatistics.calcAverageFoldChange(data, cols1, cols2);
+    public static void saveFoldChange(ExpressionData data, int[] cols, String path) {
+        double[] fcs = ExpressionStatistics.calcFoldChange(data, cols);
         double log2 = Math.log(2);
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(path));
             for (String id : data.getIdMap().keySet()) {
                 double fc = fcs[data.getIdMap().get(id)];
                 if (fc != -1) {
-                    out.write(id + "\t" + Math.log(fc)/log2 + "\n");
+                    out.write(id + "\t" + Math.log(fc) / log2 + "\n");
                 }
             }
             out.close();
@@ -273,23 +273,63 @@ public class ExpressionParser {
     }
 
     public static void saveTotalFoldChanges(ExpressionData data, int offset, String path) {
-        double[][] fcs = new double[offset][data.getValues().length];
-        for(int i = 0; i < offset; i++){
-            fcs[i] = ExpressionStatistics.calcAverageFoldChange(data, new int[]{i}, new int[]{offset + 1});
-        }
+        double[][] fcs = ExpressionStatistics.calcPairwiseFoldChanges(data, offset);
         double log2 = Math.log(2);
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(path));
             for (String id : data.getIdMap().keySet()) {
                 out.write(id);
-                for(int i = 0; i < offset; i++){
+                for (int i = 0; i < offset; i++) {
                     double fc = fcs[i][data.getIdMap().get(id)];
-                    if(fc > 0)
-                        out.write("\t" + Math.log(fcs[i][data.getIdMap().get(id)])/log2);
+                    if (fc > 0)
+                        out.write("\t" + Math.log(fcs[i][data.getIdMap().get(id)]) / log2);
                     else
                         out.write("\t0");
                 }
                 out.write("\n");
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveRapidMinerFoldChanges(String TCGAPath, String path, Set<String> features) {
+
+        double log2 = Math.log(2);
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(path));
+            String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast"};
+            for (String tissue : tissues) {
+                ExpressionData data = parseExpressionData(TCGAPath + tissue + "/total.count.tsv", "counts", true);
+                double[][] fcs = ExpressionStatistics.calcPairwiseFoldChanges(data, data.getSamples().length / 2);
+                String classification = "other";
+                if (tissue.equals("prostate")) {
+                    classification = tissue;
+                    out.write("class");
+                    for (String id : features) {
+                        if (data.getIdMap().containsKey(id)) {
+                            out.write("\t" + id);
+                        }
+                    }
+                    out.write("\n");
+                }
+                for (int i = 0; i < fcs.length; i++) {
+                    out.write(classification);
+                    for (String id : features) {
+                        if (data.getIdMap().containsKey(id)) {
+                            double fc = fcs[i][data.getIdMap().get(id)];
+                            if (fc > 0)
+                                out.write("\t" + Math.log(fc) / log2);
+                            else
+                                out.write("\t0");
+                        } else {
+                            System.out.println("id: " + id + " missing in " + tissue);
+                        }
+                    }
+                    out.write("\n");
+
+                }
             }
             out.close();
         } catch (IOException e) {
@@ -305,17 +345,64 @@ public class ExpressionParser {
                 patientIds.add(file.getName().substring(0, file.getName().indexOf(".")));
             }
         }
-        for(String id : patientIds){
+        for (String id : patientIds) {
             ExpressionData tumorCounts = parseExpressionData(patientsDir + id + ".tumor", "counts", true);
             ExpressionData healtyCounts = parseExpressionData(patientsDir + id + ".normal", "counts", true);
-            ExpressionData combined = mergeExpressionData(tumorCounts, healtyCounts, 0);
+            ExpressionData combined = mergeExpressionData(healtyCounts, tumorCounts, 0);
 
-            saveAverageFoldChange(combined, new int[]{0}, new int[]{1}, outDir + id + ".fc.tsv");
+            saveFoldChange(combined, new int[]{1, 0}, outDir + id + ".fc.tsv");
+        }
+    }
+
+    public static void saveRaypidMinerPatientsFoldChanges(String patientsDir, String outPath, Set<String> features) {
+        double log2 = Math.log(2);
+        File[] files = new File(patientsDir).listFiles();
+        Set<String> patientIds = new HashSet<>();
+        for (File file : files) {
+            if (file.isFile()) {
+                patientIds.add(file.getName().substring(0, file.getName().indexOf(".")));
+            }
+        }
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(outPath));
+            boolean first = true;
+            for (String patient : patientIds) {
+                ExpressionData healtyCounts = parseExpressionData(patientsDir + patient + ".normal", "counts", true);
+                ExpressionData tumorCounts = parseExpressionData(patientsDir + patient + ".tumor", "counts", true);
+                ExpressionData combined = mergeExpressionData(healtyCounts, tumorCounts, 0);
+                double[] fcs = ExpressionStatistics.calcFoldChange(combined, new int[]{1, 0});
+                if(first) {
+                    first = false;
+                    out.write("patient");
+                    for (String id : features) {
+                        if (combined.getIdMap().containsKey(id)) {
+                            out.write("\t" + id);
+                        }
+                    }
+                    out.write("\n");
+                }
+                out.write(patient);
+                for (String id : features) {
+                    if (combined.getIdMap().containsKey(id)) {
+                        double fc = fcs[combined.getIdMap().get(id)];
+                        if (fc > 0)
+                            out.write("\t" + Math.log(fc) / log2);
+                        else
+                            out.write("\t0");
+                    } else {
+                        System.out.println("id: " + id + " missing in " + patient);
+                    }
+                }
+                out.write("\n");
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping, String countDir, String fcDir) {
+    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping, String countDir, String fcDir, String rapidMinerDir) {
         Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 0, 1);
         Map<String, String> healthy = parseTCGAJSON(healtyJSON);
         Map<String, String> tumor = parseTCGAJSON(tumorJSON);
@@ -329,7 +416,7 @@ public class ExpressionParser {
                     ExpressionData healthyData = parseTCGAExpressionData(healtyFile, "counts", ensembl2entrez);
                     ExpressionData tumorData = parseTCGAExpressionData(tumorFile, "counts", ensembl2entrez);
                     ExpressionData combined = mergeExpressionData(healthyData, tumorData, 0);
-                    if(healthyTotal == null){
+                    if (healthyTotal == null) {
                         healthyTotal = healthyData;
                         tumorTotal = tumorData;
                     } else {
@@ -338,12 +425,12 @@ public class ExpressionParser {
                     }
 
                     saveExpressionData(combined, countDir + case1Id + ".count.tsv");
-                    saveAverageFoldChange(combined, new int[]{1}, new int[]{0}, fcDir + case1Id + ".fc.tsv");
+                    saveFoldChange(combined, new int[]{1, 0}, fcDir + case1Id + ".fc.tsv");
                 }
             }
         }
         ExpressionData total = mergeExpressionData(healthyTotal, tumorTotal, 0);
-        saveTotalFoldChanges(total, total.getSamples().length/2, fcDir + "total.fc.tsv");
+        saveTotalFoldChanges(total, total.getSamples().length / 2, fcDir + "total.fc.tsv");
         saveExpressionData(total, countDir + "total.count.tsv");
     }
 
@@ -405,7 +492,7 @@ public class ExpressionParser {
     }
 
 
-    public static void testPrediction(String predFile, String patMap){
+    public static void testPrediction(String predFile, String patMap) {
         HashMap<String, String> patientMap = new HashMap<>();
         HashMap<String, String> predictionMap = new HashMap<>();
         HashMap<String, Double> scoreMap = new HashMap<>();
@@ -435,15 +522,15 @@ public class ExpressionParser {
             e.printStackTrace();
         }
 
-        for(String id : patientMap.keySet()){
-            if(patientMap.get(id).equals("PRAD")){
-                if(predictionMap.get(id).equals("PRAD") || predictionMap.get(id).equals("Prostate_Cancer")){
+        for (String id : patientMap.keySet()) {
+            if (patientMap.get(id).equals("PRAD")) {
+                if (predictionMap.get(id).equals("PRAD") || predictionMap.get(id).equals("Prostate_Cancer")) {
                     tp++;
                 } else {
                     fn++;
                 }
             } else {
-                if(predictionMap.get(id).equals("PRAD") || predictionMap.get(id).equals("Prostate_Cancer")){
+                if (predictionMap.get(id).equals("PRAD") || predictionMap.get(id).equals("Prostate_Cancer")) {
                     fp++;
                 } else {
                     tn++;

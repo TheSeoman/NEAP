@@ -40,17 +40,17 @@ public class GIANT_Network {
         int c = 0;
 
 //        BufferedWriter wr = new BufferedWriter(new FileWriter(new File(path+"prostate_subnetwork.txt")));
-        BufferedWriter wr2 = new BufferedWriter(new FileWriter(new File(path+"aberrant_genes_prostate_subnetwork.txt")));
+//        BufferedWriter wr2 = new BufferedWriter(new FileWriter(new File(path+"aberrant_genes_prostate_subnetwork.txt")));
 
         //header
 //        wr.write("GeneA\tGeneB\tEdgeWeight");
 //        wr.newLine();
 //
-        wr2.write("Gene");
-        for (int i = 0; i < abGenes.getNumberOfPatients(); i++) {
-            wr2.write("\tAberrantGenePatient"+(i+1));
-        }
-        wr2.newLine();
+//        wr2.write("Gene");
+//        for (int i = 0; i < abGenes.getNumberOfPatients(); i++) {
+//            wr2.write("\tAberrantGenePatient"+(i+1));
+//        }
+//        wr2.newLine();
 
         for (Integer i : abGenes.aberrantGeneMap.keySet()) {
             if (neighborsGene(n, abGenes, i, 0.7).size() > 0) {
@@ -61,12 +61,12 @@ public class GIANT_Network {
 
                 System.out.println(i+" :"+cur.size()+cur);
                 c++;
-                wr2.write(i+"");
-                int[] aberrantArray = receiveAberrantGene(abGenes.aberrantGeneMap, i);
-                for (int k = 0; k < aberrantArray.length; k++) {
-                    wr2.write("\t"+aberrantArray[k]);
-                }
-                wr2.newLine();
+//                wr2.write(i+"");
+//                int[] aberrantArray = receiveAberrantGene(abGenes.aberrantGeneMap, i);
+//                for (int k = 0; k < aberrantArray.length; k++) {
+//                    wr2.write("\t"+aberrantArray[k]);
+//                }
+//                wr2.newLine();
             }
         }
 //    }
@@ -74,7 +74,7 @@ public class GIANT_Network {
         System.out.println("Aberrent Genes with Aberrent neighbors = "+c);
 
 //        wr.close();
-        wr2.close();
+//        wr2.close();
     }
 
     private static int[] receiveAberrantGene(HashMap<Integer, int[]> map, int gene) {

@@ -354,7 +354,7 @@ public class ExpressionParser {
         }
     }
 
-    public static void saveRaypidMinerPatientsFoldChanges(String patientsDir, String outPath, Set<String> features) {
+    public static void saveRapidMinerPatientsFoldChanges(String patientsDir, String outPath, Set<String> features) {
         double log2 = Math.log(2);
         File[] files = new File(patientsDir).listFiles();
         Set<String> patientIds = new HashSet<>();

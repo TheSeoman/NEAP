@@ -13,9 +13,9 @@ public class Main {
 //                GeneIdParser.parseGeneIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1));
 //        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/", "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/");
 
-        ExpressionParser.saveRapidMinerPatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET2/",
-                "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/RapidPATIENT_SET2.fc.tsv",
-                GeneIdParser.parseGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1));
+//        ExpressionParser.saveRapidMinerPatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET2/",
+//                "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/RapidPATIENT_SET2.fc.tsv",
+//                GeneIdParser.parseGeneIds("/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1));
 
 //        ExpressionParser.testPrediction("/home/seoman/Documents/NEAP/Prostate Cancer/GIANT_PRAD.prediction1", "/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map");
 

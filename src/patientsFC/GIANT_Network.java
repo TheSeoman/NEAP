@@ -27,54 +27,25 @@ public class GIANT_Network {
         File malacardsFile = new File(path+"NEAP/Prostate Cancer/Malacards/all_unique_prad.txt");
         File allGenesGIANTNetworks = new File(path+"NEAP/Prostate cancer/all_genes.txt");
 
-        double threshold = 1.0;
+        double threshold = 0.75;
 
         boolean withPatientSet = false;
 
-        double aberrantThreshold = 0.75;
+        double aberrantThreshold = .7;
 
         AberrantGenes abGenes = new AberrantGenes(allGenesGIANTNetworks, pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, withPatientSet, threshold, aberrantThreshold);
 
         System.out.println(abGenes.aberrantGeneMap.size()+"...");
 
         int c = 0;
-
-//        BufferedWriter wr = new BufferedWriter(new FileWriter(new File(path+"prostate_subnetwork.txt")));
-//        BufferedWriter wr2 = new BufferedWriter(new FileWriter(new File(path+"aberrant_genes_prostate_subnetwork.txt")));
-
-        //header
-//        wr.write("GeneA\tGeneB\tEdgeWeight");
-//        wr.newLine();
-//
-//        wr2.write("Gene");
-//        for (int i = 0; i < abGenes.getNumberOfPatients(); i++) {
-//            wr2.write("\tAberrantGenePatient"+(i+1));
-//        }
-//        wr2.newLine();
-
         for (Integer i : abGenes.aberrantGeneMap.keySet()) {
             if (neighborsGene(n, abGenes, i, 0.7).size() > 0) {
                 HashSet<Integer> cur = neighborsGene(n, abGenes, i, 0.7);
-//                for (Integer j : cur) {
-//                    wr.write(i+"\t"+j+"\t"+n.getEdge(i, j));
-//                    wr.newLine();
-
                 System.out.println(i+" :"+cur.size()+cur);
                 c++;
-//                wr2.write(i+"");
-//                int[] aberrantArray = receiveAberrantGene(abGenes.aberrantGeneMap, i);
-//                for (int k = 0; k < aberrantArray.length; k++) {
-//                    wr2.write("\t"+aberrantArray[k]);
-//                }
-//                wr2.newLine();
             }
         }
-//    }
-
         System.out.println("Aberrent Genes with Aberrent neighbors = "+c);
-
-//        wr.close();
-//        wr2.close();
     }
 
     private static int[] receiveAberrantGene(HashMap<Integer, int[]> map, int gene) {
@@ -84,7 +55,7 @@ public class GIANT_Network {
     private int geneSize;
     private ByteBuffer[] input;
     static HashMap<Integer, Integer> genMap = new HashMap<Integer, Integer>();
-
+    private int numberOfTCGACases = 0;
     private boolean isInsideMap = false;
 
     public GIANT_Network(String path, String genes) throws IOException {
@@ -94,7 +65,8 @@ public class GIANT_Network {
         readRaf(path);
     }
 
-    private static HashSet<Integer> neighborsGene(GIANT_Network n, AberrantGenes abGenes, Integer geneID, double edgeWeightThreshold) {
+    private static HashSet<Integer> neighborsGene(GIANT_Network n, AberrantGenes abGenes, Integer geneID,
+                                                  double edgeWeightThreshold) {
         HashSet<Integer> neighbors = new HashSet<Integer>();
         for (Integer i : abGenes.aberrantGeneMap.keySet()) {
             if (n.getEdge(geneID, i) >= edgeWeightThreshold) {
@@ -118,12 +90,13 @@ public class GIANT_Network {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             String line = br.readLine();
+            line = br.readLine();
             int count = 0;
 
             while (line != null) {
 
                 line = line.trim();
-                genMap.put(Integer.parseInt(line), count);
+                genMap.put(Integer.parseInt(line.split("\\t")[0]), count);
                 count++;
 
                 line = br.readLine();
@@ -194,6 +167,14 @@ public class GIANT_Network {
 
     public void setInsideMap(boolean isInsideMap) {
         this.isInsideMap = isInsideMap;
+    }
+
+    public int getNumberOfTCGACases() {
+        return numberOfTCGACases;
+    }
+
+    public void setNumberOfTCGACases(int numberOfTCGACases) {
+        this.numberOfTCGACases = numberOfTCGACases;
     }
 
 

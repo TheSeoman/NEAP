@@ -17,9 +17,10 @@ public class Runner {
         String startTime = Calendar.getInstance().getTime().toString().split("\\s+")[3];
         System.out.println("Start at "+startTime);
 
-        String output = "C:/Users/Stefan/Desktop/BLOCKPHASE/NEAP/Prostate Cancer/subnetwork_prostate";
+        String output = "C:/Users/Stefan/Desktop/BLOCKPHASE/NEAP/Prostate Cancer/subnetwork_prostate_01_threshold";
 //        String genes = "C:/Users/Stefan/Desktop/BLOCKPHASE/NEAP/Prostate Cancer/all_genes.txt";
-        File file = new File("C:/Users/Stefan/Desktop/BLOCKPHASE/prostate_subnetwork.txt");
+//        File file = new File("C:/Users/Stefan/Desktop/BLOCKPHASE/prostate_subnetwork.txt");
+        File file = new File("C:/Users/Stefan/Desktop/TissuesGIANT/MALACARD_GENES/subnetwork_genes_weights_01_threshold.txt");
         String genes = "C:/Users/Stefan/Desktop/BLOCKPHASE/aberrant_genes_prostate_subnetwork.txt";
 
         readInGenes(genes);

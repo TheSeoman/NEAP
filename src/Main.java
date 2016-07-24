@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
+        Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
+        AbberrantNeighbor n = new AbberrantNeighbor(network, );
 
 //        ExpressionParser.saveRapidMinerFoldChanges("/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/",
 //                "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/training.fcs.tsv",

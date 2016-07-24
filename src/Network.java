@@ -110,7 +110,20 @@ public class Network {
 			return(input[a].getDouble((b)*8));
 
 		}
+	}
 
-
+	public double getConnectivityScore(Integer u, Integer v){
+		double puv = getEdge(v, u);
+		double dv = 0;
+		int vq = 0;
+		for(int t : genMap.values()){
+			double pvt = getEdge(v, t);
+			if(pvt > 0.1) {
+				vq++;
+				dv += pvt;
+			}
+		}
+		dv /= vq;
+		return puv/dv;
 	}
 }

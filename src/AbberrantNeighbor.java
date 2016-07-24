@@ -21,7 +21,8 @@ public class AbberrantNeighbor {
                 for (int id2 : genesOfInterest) {
                     if (net.genMap.containsKey(id2)) {
                         double edge = net.getEdge(id1, id2);
-                        geneAssociation = geneAssociation + (1 - geneAssociation) * Math.pow(edge, 2);
+                        if(edge > 0.1)
+                            geneAssociation = geneAssociation + (1 - geneAssociation) * Math.pow(edge, 2);
                     }
                 }
                 totalAssociation += geneAssociation;

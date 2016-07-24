@@ -319,7 +319,7 @@ public class ExpressionParser {
         double log2 = Math.log(2);
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(path));
-            String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast"};
+            String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast", "kidney"};
             for (String tissue : tissues) {
                 ExpressionData data = parseExpressionData(TCGAPath + tissue + "/total.count.tsv", "counts", true);
                 double[][] fcs = ExpressionStatistics.calcPairwiseFoldChanges(data, data.getSamples().length / 2);

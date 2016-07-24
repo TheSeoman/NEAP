@@ -22,15 +22,20 @@ public class AberrantGenes {
         boolean withPatientSet = false;
         double aberrantThreshold = 0.8;
 
-        new AberrantGenes(allGenesGIANTNetworks, pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, withPatientSet, threshold, aberrantThreshold);
+        AberrantGenes ag = new AberrantGenes(allGenesGIANTNetworks, pradPatientsSet1, patientFolder, tcgaPatients, malacardsFile, withPatientSet, threshold, aberrantThreshold);
+
+        System.out.println(ag.aberrantGeneMap.size());
     }
 
     /**
+     * @param allGenesFile
      * @param pradPatientsFile
      * @param patientFolder
      * @param tcgaFolder
      * @param malacardsFile
+     * @param withPatientSet
      * @param threshold
+     * @param aberrantThreshold
      * @throws IOException
      */
     public AberrantGenes(File allGenesFile, File pradPatientsFile, File[] patientFolder, File[] tcgaFolder, File malacardsFile, boolean withPatientSet, double threshold, double aberrantThreshold) throws IOException {
@@ -38,18 +43,6 @@ public class AberrantGenes {
         receivePradPatients(pradPatientsFile);
         setNumberOfPatients(getNumberOfUniquePatients(tcgaFolder, patientFolder, withPatientSet));
         parseTCGAPatientsAndSet(patientFolder, tcgaFolder, threshold, withPatientSet);
-
-//        HashSet<Integer> malacardsGenes = new HashSet<Integer>();
-//
-//        BufferedReader bur = openReader(malacardsFile);
-//        String sLine = null;
-//
-//        while ((sLine = bur.readLine()) != null) {
-//            int id = Integer.parseInt(sLine.split("\\t")[1]);
-//            malacardsGenes.add(id);
-//        }
-//
-//        bur.close();
 
         createAberrantGeneMap(aberrantThreshold);
     }
@@ -63,27 +56,19 @@ public class AberrantGenes {
     private HashMap<Integer, int[]> createAberrantGeneMap(double aberrantThreshold) {
         HashSet<Integer> nonAberrantGenes = new HashSet<Integer>();
         for (Integer i : aberrantGeneMap.keySet()) {
-//            System.out.println(i + " ..");
             int[] cur = aberrantGeneMap.get(i);
-//            System.out.println(cur.length + "__");
             int countAberrantGenes = 0;
 
             for (int k = 0; k < cur.length; k++) {
                 countAberrantGenes += (cur[k] == 1) ? 1 : 0;
             }
 
-//            System.out.println(countAberrantGenes + " ab genes");
-
             double curGeneAberrant = (double) countAberrantGenes / (double) cur.length;
-
-//            System.out.println(curGeneAberrant + "%");
 
             if (curGeneAberrant < aberrantThreshold) {
                 nonAberrantGenes.add(i);
             }
         }
-
-//        System.out.println((aberrantGeneMap.size()-nonAberrantGenes.size())+" aberrant...");
 
         for (Integer i : nonAberrantGenes) {
             aberrantGeneMap.remove(i);
@@ -102,10 +87,10 @@ public class AberrantGenes {
 
         BufferedReader bur = openReader(f);
 
-        String sLine = null;
+        String sLine = bur.readLine();
 
         while ((sLine = bur.readLine()) != null) {
-            allGenes.add(Integer.parseInt(sLine.trim()));
+            allGenes.add(Integer.parseInt(sLine.split("\\t")[0]));
         }
 
         return allGenes;

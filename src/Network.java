@@ -31,7 +31,7 @@ public class Network {
 
 	
 	/*
-	 * readInGenes: read in list of genes(nodes) present in CreateMCSubNetwork and generate hashmap.
+	 * readInGenes: read in list of genes(nodes) present in CheckAberrantGenesPatientSet2 and generate hashmap.
 	 */
 
 	private static void readInGenes(String genes) {

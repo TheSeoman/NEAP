@@ -16,7 +16,7 @@ import java.util.*;
  */
 
 
-public class CreateMCSubNetwork {
+public class CheckAberrantGenesPatientSet2 {
 
     public static void main(String[] args) throws IOException {
         String startTime = Calendar.getInstance().getTime().toString().split("\\s+")[3];
@@ -30,7 +30,7 @@ public class CreateMCSubNetwork {
 
         double fcThreshold = 1.0;
 
-        CreateMCSubNetwork n = new CreateMCSubNetwork(path, all_genes, malacardsFile, patientFolder, fcThreshold);
+        CheckAberrantGenesPatientSet2 n = new CheckAberrantGenesPatientSet2(path, all_genes, malacardsFile, patientFolder, fcThreshold);
 
         System.out.println(fcPatientMap.size());
 
@@ -46,7 +46,7 @@ public class CreateMCSubNetwork {
 
     private boolean isInsideMap;
 
-    public CreateMCSubNetwork(String path, String genes, File malacardsFile, File[] patientFolder, double fcThreshold) throws IOException {
+    public CheckAberrantGenesPatientSet2(String path, String genes, File malacardsFile, File[] patientFolder, double fcThreshold) throws IOException {
 
         readInGenes(genes);
         geneSize = genMap.size();
@@ -141,7 +141,7 @@ public class CreateMCSubNetwork {
 
 
 	/*
-     * readInGenes: read in list of genes(nodes) present in CreateMCSubNetwork and generate hashmap.
+     * readInGenes: read in list of genes(nodes) present in CheckAberrantGenesPatientSet2 and generate hashmap.
 	 */
 
     private static void readInGenes(String genes) {

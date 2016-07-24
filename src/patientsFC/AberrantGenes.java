@@ -205,7 +205,7 @@ public class AberrantGenes {
      * @param id        gene id
      * @param fcValue   fold change for current gene
      * @param threshold fold change threshold
-     * @return new map
+     * @return new aberrantGeneMap
      */
     private HashMap<Integer, int[]> fillMap(HashMap<Integer, int[]> map, String patient, int id, double fcValue, double threshold) {
         int[] curGene = map.get(id);

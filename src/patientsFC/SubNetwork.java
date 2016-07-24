@@ -9,14 +9,14 @@ import java.util.HashSet;
 /**
  * Created by Stefan on 22.07.2016.
  */
-public class GIANT_Network {
+public class SubNetwork {
 
     public static void main(String[] args) throws IOException {
 
         String all_genes = "C:/Users/Stefan/Desktop/MaPra/all_genes.txt";
         String pathGIANT = "C:/Users/Stefan/Desktop/TissuesGIANT/RAF/prostate_gland";
 
-        GIANT_Network n = new GIANT_Network(pathGIANT, all_genes);
+        SubNetwork n = new SubNetwork(pathGIANT, all_genes, false);
 
         System.out.println("network successfully read...");
 
@@ -58,14 +58,14 @@ public class GIANT_Network {
     private int numberOfTCGACases = 0;
     private boolean isInsideMap = false;
 
-    public GIANT_Network(String path, String genes) throws IOException {
-        readInGenes(genes);
+    public SubNetwork(String path, String genes, boolean subnetwork) throws IOException {
+        readInGenes(genes, subnetwork);
         geneSize = genMap.size();
         input = new ByteBuffer[geneSize];
         readRaf(path);
     }
 
-    private static HashSet<Integer> neighborsGene(GIANT_Network n, AberrantGenes abGenes, Integer geneID,
+    private static HashSet<Integer> neighborsGene(SubNetwork n, AberrantGenes abGenes, Integer geneID,
                                                   double edgeWeightThreshold) {
         HashSet<Integer> neighbors = new HashSet<Integer>();
         for (Integer i : abGenes.aberrantGeneMap.keySet()) {
@@ -81,7 +81,7 @@ public class GIANT_Network {
 	 * hashmap.
 	 */
 
-    private static void readInGenes(String genes) {
+    private static void readInGenes(String genes, boolean subNetwork) {
 
         System.out.println("Read in genes in network..");
         InputStream is = null;
@@ -90,13 +90,19 @@ public class GIANT_Network {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             String line = br.readLine();
-            line = br.readLine();
+            if (subNetwork) //header
+                line = br.readLine();
+
             int count = 0;
 
             while (line != null) {
 
                 line = line.trim();
-                genMap.put(Integer.parseInt(line.split("\\t")[0]), count);
+                if (subNetwork) {
+                    genMap.put(Integer.parseInt(line.split("\\t")[0]), count);
+                } else {
+                    genMap.put(Integer.parseInt(line), count);
+                }
                 count++;
 
                 line = br.readLine();

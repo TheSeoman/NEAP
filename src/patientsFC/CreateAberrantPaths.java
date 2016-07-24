@@ -22,6 +22,7 @@ public class CreateAberrantPaths {
     public static HashMap<LinkedList<Integer>, int[]> calcUnion(HashMap<Integer, int[]> aberrant, HashMap<Integer, HashSet<Integer>> neighbors, int minimumSizeSubnetwork, double percentageAberrantGenes, int tcgaCases, double threshold) {
         allPaths = new HashSet<LinkedList<Integer>>();
         HashMap<LinkedList<Integer>, Boolean> o = new HashMap<LinkedList<Integer>, Boolean>();
+
         for (int x = minimumSizeSubnetwork; x < neighbors.size(); x++) {
             for (Integer i : neighbors.keySet()) {
                 for (Integer j : neighbors.keySet()) {
@@ -33,7 +34,6 @@ public class CreateAberrantPaths {
             for (LinkedList<Integer> l : allPaths) {
                 o.put(l, true);
             }
-
         }
 
         HashMap<LinkedList<Integer>, int[]> output = new HashMap<LinkedList<Integer>, int[]>();
@@ -79,7 +79,7 @@ public class CreateAberrantPaths {
     }
 
     /**
-     * find all possible paths from a to b with exaclty sizeOfMcSub (Integer) nodes
+     * find all possible paths from a to b with exactly sizeOfMcSub (Integer) nodes
      *
      * @param m           neighbors map
      * @param a           node source

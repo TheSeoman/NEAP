@@ -18,20 +18,19 @@ public class McSubnetwork {
 //        String allGenes = "C:/Users/Stefan/Desktop/MaPra/all_genes.txt";
 //        String pathGIANT = "C:/Users/Stefan/Desktop/TissuesGIANT/RAF/prostate_gland";
 
-//        String path = "C:/Users/Stefan/Desktop/BLOCKPHASE/";
         File[] patientFolder = new File(path+"NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/").listFiles();
         File pradPatientsSet1 = new File(path+"PRAD_patients_set_1.txt");
         File[] tcgaPatientsFolder = new File(path+"NEAP/Prostate Cancer/FoldChange/prostate").listFiles();
         File malacardsFile = new File(path+"NEAP/Prostate Cancer/Malacards/all_unique_prad.txt");
         File allGenesGIANTNetworks = new File(path+"NEAP/Prostate cancer/all_genes.txt");
 
-        GIANT_Network n = new GIANT_Network(pathGIANT, allGenes);
+        SubNetwork n = new SubNetwork(pathGIANT, allGenes, true);
 
         System.out.println("STARTING...");
 
         double edgeWeightThreshold = 0.7;
 
-        double fcThreshold = 0.7;
+        double fcThreshold = 0.6;
 
         double aberrantGenesThreshold = 0.6;
 
@@ -43,7 +42,7 @@ public class McSubnetwork {
     }
 
     public McSubnetwork(File[] patientFolder, File[] tcgaFolder, File pradPatientsFile, File malacardsFile, boolean withPatientSet,
-                        String network, String genes, GIANT_Network n, double edgeWeightThreshold, double fcThreshold, double aberrantGenesThreshold, int tcgaPatients, int minimalNodesMCSubnetwork) throws IOException {
+                        String network, String genes, SubNetwork n, double edgeWeightThreshold, double fcThreshold, double aberrantGenesThreshold, int tcgaPatients, int minimalNodesMCSubnetwork) throws IOException {
         AberrantGenes abGenes = new AberrantGenes(new File(genes), pradPatientsFile, patientFolder, tcgaFolder, malacardsFile, withPatientSet, fcThreshold, aberrantGenesThreshold);
 
         System.out.println("aberrant genes created...");
@@ -64,7 +63,7 @@ public class McSubnetwork {
      * @param edgeWeightThreshold threshold for edge weight of 2 genes
      * @return neighbors map
      */
-    private HashMap<Integer, HashSet<Integer>> neighbors(GIANT_Network n, HashMap<Integer, int[]> aberrantGenesMap, double edgeWeightThreshold) {
+    private HashMap<Integer, HashSet<Integer>> neighbors(SubNetwork n, HashMap<Integer, int[]> aberrantGenesMap, double edgeWeightThreshold) {
         HashMap<Integer, HashSet<Integer>> map = new HashMap<Integer, HashSet<Integer>>();
         for (Integer i : aberrantGenesMap.keySet()) {
             //neighbor if edge weight is above used cutoff 0.7

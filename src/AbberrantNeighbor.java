@@ -14,13 +14,20 @@ public class AbberrantNeighbor {
 
     public double testAssociation(Set<Integer> abberrantGenes) {
         double totalAssociation = 0;
+        int c = 0;
         for (int id1 : abberrantGenes) {
-            double geneAssociation = 0.0;
-            for (int id2 : genesOfInterest) {
-                double edge = net.getEdge(id1, id2);
-                geneAssociation = geneAssociation + (1 - geneAssociation) * edge;
+            if (net.genMap.containsKey(id1)) {
+                double geneAssociation = 0.0;
+                for (int id2 : genesOfInterest) {
+                    if (net.genMap.containsKey(id2)) {
+                        double edge = net.getEdge(id1, id2);
+                        geneAssociation = geneAssociation + (1 - geneAssociation) * Math.pow(edge, 2);
+                    }
+                }
+                totalAssociation += geneAssociation;
+                c++;
             }
         }
-        return totalAssociation / abberrantGenes.size();
+        return totalAssociation / c;
     }
 }

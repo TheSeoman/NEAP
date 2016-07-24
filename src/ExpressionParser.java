@@ -148,6 +148,26 @@ public class ExpressionParser {
         }
     }
 
+    public static Set<Integer> getAbverrantGenes(String foldChangePath, double threshold){
+        Set<Integer> aberrant = new HashSet<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(foldChangePath));
+            String line;
+            String[] split;
+            while ((line = br.readLine()) != null) {
+                split = line.split("\t");
+                int id = Integer.parseInt(split[0]);
+                double fc = Double.parseDouble(split[1]);
+                if(Math.abs(fc) >= threshold){
+                    aberrant.add(id);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return aberrant;
+    }
+
     public static ExpressionData parseExpressionData(String path, String type, boolean head) {
         List<double[]> values = new ArrayList<>();
         Map<String, Integer> idMap = new HashMap<>();

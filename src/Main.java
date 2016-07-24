@@ -1,4 +1,6 @@
 
+import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -7,8 +9,18 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/sch/schmidtju/IntellijProjects/NEAP/all_genes.txt");
-        AbberrantNeighbor n = new AbberrantNeighbor(network, );
+//        Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/seoman/Documents/NEAP/all_genes.txt");
+//        Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1);
+//        AbberrantNeighbor n = new AbberrantNeighbor(network, genesOfInterest);
+//        String fcPath = "/home/seoman/Documents/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/";
+//        File[] files = new File(fcPath).listFiles();
+//        Set<String> patientIds = new HashSet<>();
+//        for (File file : files) {
+//            if (file.isFile()) {
+//                Set<Integer> aberrant = ExpressionParser.getAbverrantGenes(file.getAbsolutePath(), 1);
+//                System.out.println(file.getName() + ": " + n.testAssociation(aberrant));
+//            }
+//        }
 
 //        ExpressionParser.saveRapidMinerFoldChanges("/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/",
 //                "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/training.fcs.tsv",
@@ -22,14 +34,15 @@ public class Main {
 //        ExpressionParser.testPrediction("/home/seoman/Documents/NEAP/Prostate Cancer/GIANT_PRAD.prediction1", "/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map");
 
 //        String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast"};
-//        for(String tissue : tissues) {
-//            ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_healthy.json",
-//                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_tumor.json",
-//                    "/home/seoman/programs/gdc transfer tool/", "/home/seoman/Documents/NEAP/geneId2ensembl",
-//                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + tissue + "/",
-//                    "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + tissue + "/",
-//                    "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/");
-//        }
+        String[] tissues = new String[]{"kidney"};
+        for(String tissue : tissues) {
+            ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_healthy.json",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_tumor.json",
+                    "/home/seoman/programs/gdc transfer tool/", "/home/seoman/Documents/NEAP/geneId2ensembl",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + tissue + "/",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + tissue + "/",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/");
+        }
 
 //        runDETStat();
 //    String experiment = "GDS2545";

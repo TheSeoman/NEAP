@@ -40,6 +40,24 @@ public class GeneIdParser {
         return ids;
     }
 
+    public static Set<Integer> parseEntrezIds(String path, int col) {
+        Set<Integer> ids = new HashSet<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] split = line.split("\t");
+                if(split.length > col) {
+                    int id = Integer.parseInt(split[col]);
+                    ids.add(id);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
     public static Set<Integer> generateRandomGeneSet(Set<Integer> allIds, int size) {
         List<Integer> all = new ArrayList<>(allIds);
         Set<Integer> ids = new HashSet<>();

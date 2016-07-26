@@ -13,6 +13,14 @@ public class McSubnetworkApproach2 {
         String pathGIANT = "C:/Users/Stefan/Desktop/TissuesGIANT/RAF/prostate_gland";
 
         SubNetwork n = new SubNetwork(pathGIANT, allGenes, false);
+
+        System.out.println(n.genMap.size());
+
+        Integer ida = 5453; //130733; // 5453;
+    Integer i = 2151;
+//        for (Integer i : n.genMap.keySet()) {
+            System.out.println(n.getEdge(ida, i) + "");
+//        }
     }
 
 

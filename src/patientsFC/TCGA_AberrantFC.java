@@ -30,46 +30,89 @@ public class TCGA_AberrantFC {
 
         int sizeOfPatients = 52;
 
+        int minimumSizeOfSubnetwork = 8;
+
+//        double outputIntersectionThreshold = .9;
+
         getAllGenes(new File(allGenes));
 
         aberrantGenesPatients(tcgaFolder, fcThreshold, aberrantThreshold);
 
-        System.out.println("Aberrant Map: "+aberrantMap.size());
-
-        System.out.println();
-
         createNeighborsMap(pathGIANT, allGenes, 1.0);
 
-        System.out.println("NeighborsMap:"+neighborsMap.size());
+        System.out.println(aberrantMap.size()+" aberrant map size");
+        System.out.println(neighborsMap.size()+" neighbors map size");
 
-        fillIntersectionList(outputIntersectionList, sizeOfPatients);
+        naiveIntersectionGeneOfInterest(aberrantMap.get(1191), 1191, intersectionThreshold, sizeOfPatients);
 
-//        createIntersection(outputIntersectionList, 1191, intersectionThreshold);
+        System.out.println(outputIntersectionList+"\n"+maximalConsistentMap);
 
-        int startingGene = 1191;
-
-        testIntersection(aberrantMap.get(startingGene), startingGene, intersectionThreshold, sizeOfPatients);
-        System.out.println("END: "+outputIntersectionList);
-        System.out.println("Visited: "+visitedGenesForIntersection);
-        System.out.println();
-        System.out.println(m);
-        System.out.println("SIZE: "+m.size());
-        for (Integer i : m.keySet()) {
-            System.out.println(i+" visited");
-        }
-
-        System.out.println();
-        System.out.println(neighborsMap.size());
+//        findMaximalIntersectionNaive(intersectionThreshold, sizeOfPatients, minimumSizeOfSubnetwork); //, outputIntersectionThreshold);
+//
+//        for (Integer i : maximalIntersetionsGenesSubnetwork.keySet()) {
+//            double curPrecentage = (100 * getPercentageOfAberrantGenesCurrentIntersection(maximalIntersectionsPerGene.get(i)));
+//            if (curPrecentage >= 60.0) {
+//                System.out.println("MCSubnet of genes number: "+maximalIntersetionsGenesSubnetwork.get(i).size()+" with "+curPrecentage+"% aberrant patients and containing "+maximalIntersetionsGenesSubnetwork.get(i));
+//                System.out.println(maximalIntersectionsPerGene.get(i));
+//            }
+//        }
+//
+////        System.out.println();
+//        System.out.println();
+//
+//
+//        System.out.println(aberrantMap.get(6288)+" - "+6288);
+//        System.out.println(aberrantMap.get(2625)+" - "+2625);
+//        System.out.println(aberrantMap.get(7857)+" - "+7857);
+//        System.out.println(aberrantMap.get(5443)+" - "+5443);
+//        System.out.println(aberrantMap.get(5268)+" - "+5268);
+//        System.out.println(aberrantMap.get(89780)+" - "+89780);
+//        System.out.println(aberrantMap.get(2950)+" - "+2950);
+//        System.out.println(aberrantMap.get(10568)+" - "+10568);
+//        System.out.println(aberrantMap.get(5579)+" - "+5579);
+//        System.out.println(aberrantMap.get(6286)+" - "+6286);
     }
+
 
     public static HashMap<Integer, ArrayList<Byte>> aberrantMap = new HashMap<Integer, ArrayList<Byte>>();
 
     public static HashMap<Integer, HashSet<Integer>> neighborsMap = new HashMap<Integer, HashSet<Integer>>();
 
     public static ArrayList<Byte> outputIntersectionList = new ArrayList<Byte>();
-    private static HashSet<Integer> visitedGenesForIntersection = new HashSet<Integer>();
-    private static HashMap<Integer, Integer> m = new HashMap<Integer, Integer>();
-    private static int n;
+    private static HashMap<Integer, Boolean> visitedGenesForIntersection = new HashMap<Integer, Boolean>();
+    private static HashMap<Integer, Integer> maximalConsistentMap = new HashMap<Integer, Integer>();
+    private static int geneVisitedPositionMCSubnet = 0;
+
+    private static HashMap<Integer, ArrayList<Byte>> maximalIntersectionsPerGene = new HashMap<Integer, ArrayList<Byte>>();
+    private static HashMap<Integer, ArrayList<Integer>> maximalIntersetionsGenesSubnetwork = new HashMap<Integer, ArrayList<Integer>>();
+
+    private static void findMaximalIntersectionNaive(double intersectionThreshold, int sizeOfPatients, int minimumSizeOfSubnetwork) throws IOException {
+        // loop through all aberrant genes
+        for (Integer curAberrantGene : neighborsMap.keySet()) {
+            // create new list, set, map and set gene visited to 0
+            outputIntersectionList = new ArrayList<Byte>();
+            visitedGenesForIntersection = new HashMap<Integer, Boolean>();
+            maximalConsistentMap = new HashMap<Integer, Integer>();
+            geneVisitedPositionMCSubnet = 0;
+
+            fillIntersectionList(outputIntersectionList, sizeOfPatients);
+
+            // get maximal naive intersecction for current gene
+            ArrayList<Byte> maximalIntersecionCurrentGene = naiveIntersectionGeneOfInterest(aberrantMap.get(curAberrantGene), curAberrantGene, intersectionThreshold, sizeOfPatients);
+
+            // store genes of maximal naive intersection for new subnetwork
+            ArrayList<Integer> currentGeneSubnetworkGenes = new ArrayList<Integer>();
+            for (Integer subnetworkGene : maximalConsistentMap.keySet()) {
+                currentGeneSubnetworkGenes.add(subnetworkGene);
+            }
+
+            // check if current subnetwork contains at least minimumSizeOfSubnetwork nodes
+            if (currentGeneSubnetworkGenes.size() >= minimumSizeOfSubnetwork) {
+                maximalIntersectionsPerGene.put(curAberrantGene, maximalIntersecionCurrentGene);
+                maximalIntersetionsGenesSubnetwork.put(curAberrantGene, currentGeneSubnetworkGenes);
+            }
+        }
+    }
 
     /**
      * @param list
@@ -92,70 +135,78 @@ public class TCGA_AberrantFC {
      * @return maximal consistent intersection vector (% of aberrant above intersectionThreshold)
      * @throws IOException
      */
-    private static ArrayList<Byte> testIntersection(ArrayList<Byte> out, int gene, double intersectionThreshold, int sizeOfPatients) throws IOException {
+    private static ArrayList<Byte> naiveIntersectionGeneOfInterest(ArrayList<Byte> out, int gene, double intersectionThreshold, int sizeOfPatients) throws IOException {
         // add gene to visited list
-        if (!visitedGenesForIntersection.contains(gene)) {
-            visitedGenesForIntersection.add(gene);
+        if (!visitedGenesForIntersection.containsKey(gene)) {
+            visitedGenesForIntersection.put(gene, true);
         }
-
-        // get current intersection vector
-        ArrayList<Byte> currentIntersection = out;
 
         // create temporary intersection array list
         // used to compare with intersectionThreshold
         ArrayList<Byte> tempIntersection = new ArrayList<Byte>();
         fillIntersectionList(tempIntersection, sizeOfPatients);
 
+        System.out.println(out+" start");
+
         // loop through gene neighbors
         for (Integer i : neighborsMap.get(gene)) {
             // check if gene has not been visited so far
-            if (!visitedGenesForIntersection.contains((i))) {
-                visitedGenesForIntersection.add(i);
+//            System.out.print(i+"");
+            if (!visitedGenesForIntersection.containsKey((i))) {
+                visitedGenesForIntersection.put(i, true);
+//                System.out.println(" CUR");
 
                 // get aberrant vector for current gene i
                 ArrayList<Byte> currentGeneAberrantList = aberrantMap.get(i);
-                System.out.println("OUT: "+gene+"-"+currentIntersection);
-                System.out.println("CUR: "+i+"-"+currentGeneAberrantList);
-                System.out.print("NEW: [");
+//                System.out.println("OUT: "+gene+"\t-"+out);
+//                System.out.println("CUR: "+i+"\t-"+currentGeneAberrantList);
+//                System.out.print("NEW:     \t-[");
 
                 //create intersection of current gene with currentIntersection
-                for (int k = 0; k < currentIntersection.size(); k++) {
-                    if (currentIntersection.get(k) == (byte) 1 && currentGeneAberrantList.get(k) == (byte) 1) {
-                        System.out.print("1, ");
+                for (int k = 0; k < out.size(); k++) {
+                    if (out.get(k) == (byte) 1 && currentGeneAberrantList.get(k) == (byte) 1) {
+//                        System.out.print("1, ");
                         tempIntersection.set(k, (byte) 1);
                     } else {
                         tempIntersection.set(k, (byte) 0);
-                        System.out.print("0, ");
+//                        System.out.print("0, ");
                     }
                 }
 
-                System.out.println();
+//                System.out.println("\n");
 
                 // check if intersection is still "good" (above intersectionThreshold)
-                int aberrantOccurences = Collections.frequency(tempIntersection, (byte) 1);
-                double aberrantPercantage = (double) aberrantOccurences / (double) tempIntersection.size();
-                System.out.println(aberrantOccurences+" - "+tempIntersection.size()+" -> "+aberrantPercantage);
+                double aberrantPercantage = getPercentageOfAberrantGenesCurrentIntersection(tempIntersection);
+
                 if (aberrantPercantage >= intersectionThreshold) {
-                    if (!m.containsKey(gene)) {
-                        System.out.println("PUT IN MAP: "+gene+" at position: "+n);
-                        m.put(gene, n++);
+                    if (!maximalConsistentMap.containsKey(gene)) {
+                        maximalConsistentMap.put(gene, geneVisitedPositionMCSubnet++);
                     }
-                    if (!m.containsKey(i)) {
-                        System.out.println("PUT IN MAP: "+i+" at position: "+n);
-                        m.put(i, n++);
+                    if (!maximalConsistentMap.containsKey(i)) {
+                        maximalConsistentMap.put(i, geneVisitedPositionMCSubnet++);
                     }
-                    outputIntersectionList = tempIntersection;
-                    System.out.println("NOUT:"+outputIntersectionList);
-                    System.out.println();
-                    testIntersection(outputIntersectionList, i, intersectionThreshold, sizeOfPatients);
+//                    System.out.println(currentGeneAberrantList+" cur");
+                    System.out.println(tempIntersection+" tmp");
+                    naiveIntersectionGeneOfInterest(tempIntersection, i, intersectionThreshold, sizeOfPatients);
                 } else {
                     continue;
                 }
+            } else {
+//                System.out.println(" INSIDE");
+                continue;
             }
 
         }
 
-        return out;
+        return outputIntersectionList;
+    }
+
+    /**
+     * @param tempIntersection represents intersection list
+     * @return percentage of aberrant patients in intersecion list
+     */
+    private static double getPercentageOfAberrantGenesCurrentIntersection(ArrayList<Byte> tempIntersection) {
+        return (double) Collections.frequency(tempIntersection, (byte) 1) / tempIntersection.size();
     }
 
     /**

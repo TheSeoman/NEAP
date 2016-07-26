@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -11,17 +12,17 @@ public class Main {
     public static void main(String[] args) {
         Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/seoman/Documents/NEAP/all_genes.txt");
         Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1);
-        AbberrantNeighbor n = new AbberrantNeighbor(network, genesOfInterest);
-        String fcPath = "/home/seoman/Documents/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/";
-        File[] files = new File(fcPath).listFiles();
-        Set<String> patientIds = new HashSet<>();
-        for (File file : files) {
-            if (file.isFile()) {
-                Set<Integer> aberrant = ExpressionParser.getAbverrantGenes(file.getAbsolutePath(), 1);
-                System.out.println(file.getName() + ": " + n.testAssociation(aberrant));
-            }
-        }
+        Map<String, String> patientMap = GeneIdParser.parseMappingFile("/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map", 0, 1);
+        double[] param = new double[]{0.5, 0.5, 0.5, 0.5, 0.5};
+        for(int i = 0; i < 5; i++){
+            AbberrantNeighbor n = new AbberrantNeighbor(network, genesOfInterest, i, param[i]);
+//        n.runOnPatientSet("/home/seoman/Documents/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1",
+//          "/home/seoman/Documents/NEAP/Prostate Cancer/AberrantNeighbors/PATIENT_SET1_" + scoringMethod + ".tsv", patientMap, "PRAD");
 
+            n.runOnTCGAData("/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange",
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/AberrantNeighbors/TCGA_" + i + ".tsv");
+
+        }
 //        ExpressionParser.saveRapidMinerFoldChanges("/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/",
 //                "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/training.fcs.tsv",
 //                GeneIdParser.parseGeneIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1));

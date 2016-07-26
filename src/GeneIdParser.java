@@ -69,26 +69,26 @@ public class GeneIdParser {
         return ids;
     }
 
-    public static Map<String, String> parseMappingFile(String mappingPath, int entrezCol, int ensemblCol) {
-        Map<String, String> ensembl2Entrez = new HashMap<>();
+    public static Map<String, String> parseMappingFile(String mappingPath, int keyCol, int valueCol) {
+        Map<String, String> mapping = new HashMap<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(mappingPath));
             String line;
             String[] split;
-            int expectedCols = Math.max(entrezCol, ensemblCol);
+            int expectedCols = Math.max(keyCol, valueCol);
             while ((line = br.readLine()) != null) {
                 split = line.split("\t");
-                if (split.length > expectedCols && !split[ensemblCol].equals("") && !split[entrezCol].equals("")) {
-                    if (!ensembl2Entrez.containsKey(split[ensemblCol])) {
-                        ensembl2Entrez.put(split[ensemblCol], split[entrezCol]);
+                if (split.length > expectedCols && !split[valueCol].equals("") && !split[keyCol].equals("")) {
+                    if (!mapping.containsKey(split[keyCol])) {
+                        mapping.put(split[keyCol], split[valueCol]);
                     } else {
-                        System.out.println("Ignore multiple occurrence of: " + split[ensemblCol]);
+                        System.out.println("Ignore multiple occurrence of key: " + split[keyCol]);
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ensembl2Entrez;
+        return mapping;
     }
 }

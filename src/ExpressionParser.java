@@ -148,8 +148,8 @@ public class ExpressionParser {
         }
     }
 
-    public static Set<Integer> getAbverrantGenes(String foldChangePath, double threshold){
-        Set<Integer> aberrant = new HashSet<>();
+    public static Map<Integer, Double> getAberrantGenes(String foldChangePath, double threshold){
+        Map<Integer, Double> aberrant = new HashMap<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(foldChangePath));
             String line;
@@ -159,7 +159,7 @@ public class ExpressionParser {
                 int id = Integer.parseInt(split[0]);
                 double fc = Double.parseDouble(split[1]);
                 if(Math.abs(fc) >= threshold){
-                    aberrant.add(id);
+                    aberrant.put(id, fc);
                 }
             }
         } catch (IOException e) {

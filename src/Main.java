@@ -10,7 +10,9 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        MCSubnet mcs = new MCSubnet(0.3, 1.0, 0.5);
+        MCSubnet mcs = new MCSubnet(0.3, 1.0, 0.7);
+        mcs.findTotalKGreedySubnet(74);
+
 //        Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/seoman/Documents/NEAP/all_genes.txt");
 //        System.out.println(network.getEdge(1, 1));
 //        Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1);

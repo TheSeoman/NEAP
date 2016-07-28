@@ -9,7 +9,7 @@ public class MCSubnet {
     Map<Integer, boolean[]> aberrantVectors;
     Map<Integer, Set<Integer>> neighbors;
 
-    double edgeThreshhold;
+    double edgeThreshold;
     double fcThreshold;
     double consistencyThreshold;
 
@@ -17,10 +17,24 @@ public class MCSubnet {
     private String networkPath = "/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland";
     private String allGenesPath = "/home/seoman/Documents/NEAP/all_genes.txt";
 
-    public MCSubnet(double edgeThreshold, double fcThreshold, double consistencyThreshold) {
-        this.edgeThreshhold = edgeThreshold;
+
+    public MCSubnet(double edgeThreshold, double fcThreshold, double consistencyThreshold, String networkPath) {
+        this.networkPath = networkPath;
+        this.edgeThreshold = edgeThreshold;
         this.fcThreshold = fcThreshold;
         this.consistencyThreshold = consistencyThreshold;
+        this.networkPath = networkPath;
+        init();
+    }
+
+    public MCSubnet(double edgeThreshold, double fcThreshold, double consistencyThreshold) {
+        this.edgeThreshold = edgeThreshold;
+        this.fcThreshold = fcThreshold;
+        this.consistencyThreshold = consistencyThreshold;
+        init();
+    }
+
+    public void init(){
         net = NetworkParser.readBinaryNetwork(networkPath, allGenesPath);
         File[] files = new File(fcDir).listFiles();
         Map<String, Map<Integer, Double>> patients = new HashMap<>();
@@ -54,68 +68,28 @@ public class MCSubnet {
 
         int connectedGenes = 0;
         int edges = 0;
-        for (int geneId : aberrantVectors.keySet()) {
-            neighbors.put(geneId, new HashSet<Integer>());
-            for (int neighbor : aberrantVectors.keySet()) {
-                if (net.getEdge(geneId, neighbor) >= edgeThreshold) {
-                    neighbors.get(geneId).add(neighbor);
+        Set<Integer> isolated = new HashSet<>();
+        for (int geneId1 : aberrantVectors.keySet()) {
+            Set<Integer> neighborSet = new HashSet<>();
+            for (int geneId2 : aberrantVectors.keySet()) {
+                if (net.getEdge(geneId1, geneId2) >= edgeThreshold) {
+                    neighborSet.add(geneId2);
                     edges++;
                 }
             }
-            if (neighbors.get(geneId).size() > 0) {
+            if (neighborSet.size() > 0) {
                 connectedGenes++;
+                neighbors.put(geneId1, neighborSet);
+            } else {
+                isolated.add(geneId1);
             }
         }
+        for(int geneId : isolated){
+            aberrantVectors.remove(geneId);
+        }
+
         System.out.println("Connected aberrant Genes: " + connectedGenes);
         System.out.println("Edges found: " + edges / 2);
-
-        findTotalKGreedySubnet(2);
-    }
-
-    public void findGreedySubnet(int startGene) {
-        Set<Integer> currentSet = new HashSet<>();
-        currentSet.add(startGene);
-        Set<Integer> removedGenes = new HashSet<>();
-        double currentConsistency = calcConsistency(aberrantVectors.get(startGene));
-        Set<Integer> activeNeighbors = new HashSet<>(neighbors.get(startGene));
-        boolean[] currentVector = aberrantVectors.get(startGene);
-
-        while (currentConsistency >= consistencyThreshold && activeNeighbors.size() > 0) {
-            int bestNeighbor = -1;
-            double maxConsistency = -1;
-            Set<Integer> toRemove = new HashSet<>();
-            for (int neighbor : activeNeighbors) {
-                boolean[] joinedVector = intersect(currentVector, aberrantVectors.get(neighbor));
-                double joinedConsistency = calcConsistency(joinedVector);
-                if (joinedConsistency < consistencyThreshold) {
-                    toRemove.add(neighbor);
-                    removedGenes.add(neighbor);
-                } else {
-                    if (joinedConsistency > maxConsistency) {
-                        maxConsistency = joinedConsistency;
-                        bestNeighbor = neighbor;
-                    }
-                }
-            }
-            activeNeighbors.removeAll(toRemove);
-
-            if (bestNeighbor == -1) {
-                break;
-            } else {
-                activeNeighbors.remove(bestNeighbor);
-                currentSet.add(bestNeighbor);
-                currentVector = intersect(currentVector, aberrantVectors.get(bestNeighbor));
-                for (int gene : neighbors.get(bestNeighbor)) {
-                    if (!currentSet.contains(gene) && !removedGenes.contains(gene)) {
-                        activeNeighbors.add(gene);
-                    }
-                }
-                currentConsistency = calcConsistency(currentVector);
-            }
-        }
-        System.out.println(currentSet);
-        System.out.println(currentConsistency);
-        System.out.println(currentVector);
     }
 
     public void findTotalKGreedySubnet(int k){
@@ -164,6 +138,7 @@ public class MCSubnet {
         List<boolean[]> terminatedVectors = new ArrayList<>();
 
         while (currentSets.size() > 0) {
+            System.out.println("CurrentSets: " + currentSets.size() + "\t" + "SetSize: " + currentSets.get(0).size());
             newCurrentSets = new ArrayList<>();
             newActiveNeighbors = new ArrayList<>();
             newCurrentVectors = new ArrayList<>();
@@ -201,19 +176,19 @@ public class MCSubnet {
                 activeNeighbors.get(i).removeAll(toRemove);
 
                 if (order.size() == 0) {
-                    System.out.println("No more genes can be added to: " + currentSets.get(i));
+//                    System.out.println("No more genes can be added to: " + currentSets.get(i));
                     terminatedSets.add(currentSets.get(i));
                     terminatedVectors.add(currentVectors.get(i));
                 } else {
                     for (int j = 0; j < Math.min(order.size(), k); j++) {
                         int geneToAdd = order.get(j);
-                        System.out.println(geneToAdd + "\t" + currentSets.get(i));
+//                        System.out.println(geneToAdd + "\t" + currentSets.get(i));
                         Set<Integer> newCurrentSet = new HashSet<>(currentSets.get(i));
                         newCurrentSet.add(geneToAdd);
                         boolean duplicate = false;
                         for (Set<Integer> currentSet : newCurrentSets) {
                             if (currentSet.containsAll(newCurrentSet)) {
-                                System.out.println("Set " + currentSet + " already in newCurrentSets");
+//                                System.out.println("Set " + currentSet + " already in newCurrentSets");
                                 duplicate = true;
                                 break;
                             }
@@ -241,6 +216,10 @@ public class MCSubnet {
             removedGenes = newRemovedGenes;
         }
         System.out.println(terminatedSets.size());
+        for(int i = 0; i < terminatedSets.size(); i++){
+            double cons = calcConsistency(terminatedVectors.get(i));
+            System.out.println(terminatedSets.get(i) + "\t" + terminatedSets.get(i).size() + "\t" + cons + "\t" + terminatedSets.get(i).size() * cons);
+        }
     }
 
     private double calcConsistency(boolean[] vector) {
@@ -252,6 +231,7 @@ public class MCSubnet {
         return (double) aberrant / vector.length;
     }
 
+    //use long bitwise comparison
     private boolean[] intersect(boolean[] v1, boolean[] v2) {
         boolean[] v = new boolean[v1.length];
         for (int i = 0; i < v1.length; i++) {

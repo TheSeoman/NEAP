@@ -423,7 +423,7 @@ public class ExpressionParser {
 
 
     public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping, String countDir, String fcDir, String rapidMinerDir) {
-        Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 0, 1);
+        Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 1, 0);
         Map<String, String> healthy = parseTCGAJSON(healtyJSON);
         Map<String, String> tumor = parseTCGAJSON(tumorJSON);
         ExpressionData healthyTotal = null;

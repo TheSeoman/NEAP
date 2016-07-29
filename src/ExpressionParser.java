@@ -148,7 +148,7 @@ public class ExpressionParser {
         }
     }
 
-    public static Map<Integer, Double> getAberrantGenes(String foldChangePath, double threshold){
+    public static Map<Integer, Double> getAberrantGenes(String foldChangePath, double threshold) {
         Map<Integer, Double> aberrant = new HashMap<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(foldChangePath));
@@ -158,8 +158,37 @@ public class ExpressionParser {
                 split = line.split("\t");
                 int id = Integer.parseInt(split[0]);
                 double fc = Double.parseDouble(split[1]);
-                if(Math.abs(fc) >= threshold){
+                if (Math.abs(fc) >= threshold) {
                     aberrant.put(id, fc);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return aberrant;
+    }
+
+    public static List<Map<Integer, Double>> getTotalAberrantGenes(String foldChangePath, double threshold) {
+        List<Map<Integer, Double>> aberrant = null;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(foldChangePath));
+            String line;
+            String[] split;
+            while ((line = br.readLine()) != null) {
+                split = line.split("\t");
+                if (aberrant == null) {
+                    aberrant = new ArrayList<>();
+                    for (int i = 0; i < split.length - 1; i++) {
+                        aberrant.add(new HashMap<Integer, Double>());
+                    }
+                }
+
+                int id = Integer.parseInt(split[0]);
+                for (int i = 1; i < split.length; i++) {
+                    double fc = Double.parseDouble(split[i]);
+                    if (Math.abs(fc) >= threshold) {
+                        aberrant.get(i-1).put(id, fc);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -391,7 +420,7 @@ public class ExpressionParser {
                 ExpressionData tumorCounts = parseExpressionData(patientsDir + patient + ".tumor", "counts", true);
                 ExpressionData combined = mergeExpressionData(healtyCounts, tumorCounts, 0);
                 double[] fcs = ExpressionStatistics.calcFoldChange(combined, new int[]{1, 0});
-                if(first) {
+                if (first) {
                     first = false;
                     out.write("patient");
                     for (String id : features) {

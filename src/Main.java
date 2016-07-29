@@ -10,19 +10,18 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        MCSubnet mcs = new MCSubnet(0.3, 1.0, 0.7);
-        mcs.findTotalKGreedySubnet(74);
-
-//        Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/seoman/Documents/NEAP/all_genes.txt");
-//        System.out.println(network.getEdge(1, 1));
-//        Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1);
-//        Map<String, String> patientMap = GeneIdParser.parseMappingFile("/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map", 0, 1);
-//        double[] param = new double[]{0.5, 0.5, 0.5, 0.5, 0.5};
-//        for(int i = 0; i < 5; i++){
-//            AbberrantNeighbor n = new AbberrantNeighbor(network, genesOfInterest, i, param[i]);
-//        n.runOnPatientSet("/home/seoman/Documents/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1",
-//          "/home/seoman/Documents/NEAP/Prostate Cancer/AberrantNeighbors/PATIENT_SET1_" + i + ".tsv", patientMap, "PRAD");
+        MCSubnet mcs = new MCSubnet(0., 1.0, 0.7);
+        mcs.findTotalKGreedySubnet(3);
 //
+//        String[] networks = new String[]{"prostate_gland", "", "", "mammary_gland"}
+//        String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast", "kidney"};
+//        for(int i = 0; i < 5; i++) {
+//            Network network = NetworkParser.readBinaryNetwork("/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland", "/home/seoman/Documents/NEAP/all_genes.txt");
+//            System.out.println(network.getEdge(1, 1));
+//            Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1);
+//            Map<String, String> patientMap = GeneIdParser.parseMappingFile("/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map", 0, 1);
+//            double[] param = new double[]{0.5, 0.5, 0.5, 0.5, 0.5};
+//            AbberrantNeighbor n = new AbberrantNeighbor(network, genesOfInterest, param[i]);
 //            n.runOnTCGAData("/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange",
 //                    "/home/seoman/Documents/NEAP/Prostate Cancer/AberrantNeighbors/TCGA_" + i + ".tsv");
 //

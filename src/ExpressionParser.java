@@ -187,7 +187,7 @@ public class ExpressionParser {
                 for (int i = 1; i < split.length; i++) {
                     double fc = Double.parseDouble(split[i]);
                     if (Math.abs(fc) >= threshold) {
-                        aberrant.get(i-1).put(id, fc);
+                        aberrant.get(i - 1).put(id, fc);
                     }
                 }
             }
@@ -304,7 +304,7 @@ public class ExpressionParser {
         return caseToFile;
     }
 
-    public static Map<Integer, Double> parseFoldChanges(String path){
+    public static Map<Integer, Double> parseFoldChanges(String path) {
         Map<Integer, Double> fc = new HashMap<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
@@ -322,7 +322,7 @@ public class ExpressionParser {
         return fc;
     }
 
-    public static Map<Integer, double[]> parseMultipleFoldChanges(String path){
+    public static Map<Integer, double[]> parseMultipleFoldChanges(String path) {
         Map<Integer, double[]> fc = new HashMap<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
@@ -331,9 +331,9 @@ public class ExpressionParser {
             while ((line = br.readLine()) != null) {
                 split = line.split("\t");
                 int id = Integer.parseInt(split[0]);
-                double[] value = new double[split.length-1];
-                for(int i = 1; i < split.length; i++){
-                    value[i-1] = Double.parseDouble(split[i]);
+                double[] value = new double[split.length - 1];
+                for (int i = 1; i < split.length; i++) {
+                    value[i - 1] = Double.parseDouble(split[i]);
                 }
                 fc.put(id, value);
             }
@@ -382,7 +382,7 @@ public class ExpressionParser {
         }
     }
 
-    public static void saveRapidMinerFoldChanges(String caseFcDir, String patientFcDir, Set<Integer> features, String disease, String trainingOutPath, String patientsOutPath){
+    public static void saveRapidMinerFoldChanges(String caseFcDir, String patientFcDir, Set<Integer> features, String disease, String trainingOutPath, String patientsOutPath, boolean saveTraining, boolean savePatients) {
         double occCutoff = 0.5;
         Map<String, Map<Integer, Double>> cases = new HashMap<>();
         Map<String, Map<Integer, Double>> patients = new HashMap<>();
@@ -407,65 +407,67 @@ public class ExpressionParser {
         }
 
         Set<Integer> presentFeatures = new HashSet<>();
-        for(int gene : features){
+        for (int gene : features) {
             int patientOccs = 0;
             int caseOccs = 0;
-            for(Map<Integer, Double> fcs : patients.values()){
-                if(fcs.containsKey(gene))
+            for (Map<Integer, Double> fcs : patients.values()) {
+                if (fcs.containsKey(gene))
                     patientOccs++;
             }
-            if((double) patientOccs/ patients.size() < occCutoff)
+            if ((double) patientOccs / patients.size() < occCutoff)
                 continue;
 
-            for(Map<Integer, Double> fcs : cases.values()){
-                if(fcs.containsKey(gene))
+            for (Map<Integer, Double> fcs : cases.values()) {
+                if (fcs.containsKey(gene))
                     caseOccs++;
             }
-            if((double) caseOccs / cases.size() < occCutoff)
+            if ((double) caseOccs / cases.size() < occCutoff)
                 continue;
 
             presentFeatures.add(gene);
         }
 
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(trainingOutPath));
-            out.write("class");
-            for(int gene : presentFeatures){
-                out.write("\t" + gene);
-            }
-            out.write("\n");
-            for(String caseId : cases.keySet()){
-                out.write(caseLabels.get(caseId));
+            if(saveTraining) {
+                BufferedWriter out = new BufferedWriter(new FileWriter(trainingOutPath));
+                out.write("class");
                 for (int gene : presentFeatures) {
-                    if(cases.get(caseId).containsKey(gene)){
-                        out.write("\t" + cases.get(caseId).get(gene));
-                    }
-                    else{
-                        out.write("\t0");
-                    }
+                    out.write("\t" + gene);
                 }
                 out.write("\n");
+                for (String caseId : cases.keySet()) {
+                    out.write(caseLabels.get(caseId));
+                    for (int gene : presentFeatures) {
+                        if (cases.get(caseId).containsKey(gene)) {
+                            out.write("\t" + cases.get(caseId).get(gene));
+                        } else {
+                            out.write("\t0");
+                        }
+                    }
+                    out.write("\n");
+                }
+                out.close();
             }
-            out.close();
-            out = new BufferedWriter(new FileWriter(patientsOutPath));
-            out.write("patient");
-            for(int gene : presentFeatures){
-                out.write("\t" + gene);
-            }
-            out.write("\n");
-            for(String patientId : patients.keySet()){
-                out.write(patientId);
-                for (int gene : presentFeatures) {
-                    if(patients.get(patientId).containsKey(gene)){
+            if (savePatients) {
+                BufferedWriter out = new BufferedWriter(new FileWriter(patientsOutPath));
+                boolean first = true;
+                for (String patientId : patients.keySet()) {
+                    if (first) {
+                        out.write("patient");
+                        for (int gene : patients.get(patientId).keySet()) {
+                            out.write("\t" + gene);
+                        }
+                        out.write("\n");
+                        first = false;
+                    }
+                    out.write(patientId);
+                    for (int gene : patients.get(patientId).keySet()) {
                         out.write("\t" + patients.get(patientId).get(gene));
                     }
-                    else{
-                        out.write("\t0");
-                    }
+                    out.write("\n");
                 }
-                out.write("\n");
+                out.close();
             }
-            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -490,7 +492,7 @@ public class ExpressionParser {
         }
     }
 
-    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping, String countDir, String fcDir, String rapidMinerDir) {
+    public static void mergeTCGACountFiles(String healtyJSON, String tumorJSON, String TCGAdir, String ensembl2entrezMapping, String countDir) {
         Map<String, String> ensembl2entrez = GeneIdParser.parseMappingFile(ensembl2entrezMapping, 1, 0);
         Map<String, String> healthy = parseTCGAJSON(healtyJSON);
         Map<String, String> tumor = parseTCGAJSON(tumorJSON);

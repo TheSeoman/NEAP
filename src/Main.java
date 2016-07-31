@@ -85,14 +85,23 @@ public class Main {
                 "/home/seoman/Documents/NEAP/Prostate Cancer/PatientFoldChangePseudo/PATIENT_SET3"};
 //        String featureName = "malacard";
 //        Set<Integer> features = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt",1);
+        double[] edgeThresholds = new double[]{0.1};
+        double[] consistencyThresholds = new double[]{0.5};
+        double fcThreshold = 1.0;
+        for(double edgeThreshold : edgeThresholds) {
+            for(double consistencyThreshold : consistencyThresholds){
+                String featureName = String.valueOf(edgeThreshold) + "_" + String.valueOf(consistencyThreshold) + "_1";
+                Set<Integer> features = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/mcSubnet/" + featureName + ".tsv", 0);
+                String disease = "prostate";
+                String rapidMinerOutDir = "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/";
+                for (String patientFcDir : patientFcDirs) {
+                    ExpressionParser.saveRapidMinerFoldChanges(caseFcDir, patientFcDir, features, disease,
+                            rapidMinerOutDir + "training_" + featureName + ".tsv",
+                            rapidMinerOutDir + patientFcDir.substring(patientFcDir.lastIndexOf("/")) + "_" + featureName + ".tsv");
+                }
+        }
         String featureName = "0.5_0.5_1";
-        Set<Integer> features = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/mcSubnet/" + featureName + ".tsv", 0);
-        String disease = "prostate";
-        String rapidMinerOutDir = "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/";
-        for (String patientFcDir : patientFcDirs) {
-            ExpressionParser.saveRapidMinerFoldChanges(caseFcDir, patientFcDir, features, disease,
-                    rapidMinerOutDir + "training_" + featureName + ".tsv",
-                    rapidMinerOutDir + patientFcDir.substring(patientFcDir.lastIndexOf("/")) + "_" + featureName + ".tsv");
+
         }
     }
 
@@ -118,14 +127,14 @@ public class Main {
     }
 
     public static void runMCSubnet() {
-        double[] edgeThresholds = new double[]{0.1, 0.3, 0.5, 0.7, 0.9};
-        double[] consistencyThresholds = new double[]{0.5, 0.6, 0.7, 0.8};
-        int k = 3;
-        double fcThreshhold = 1.0;
+        double[] edgeThresholds = new double[]{0.1};
+        double[] consistencyThresholds = new double[]{0.5};
+        int k = 2;
+        double fcThreshold = 1.0;
         for(double edgeThreshold : edgeThresholds) {
             for(double consistencyThreshold : consistencyThresholds) {
-                System.out.println("Genereate mcSubnet: " + edgeThreshold + ", " + fcThreshhold + ", " + consistencyThreshold);
-                MCSubnet mcs = new MCSubnet(edgeThreshold, fcThreshhold, consistencyThreshold);
+                System.out.println("Genereate mcSubnet: " + edgeThreshold + ", " + fcThreshold + ", " + consistencyThreshold);
+                MCSubnet mcs = new MCSubnet(edgeThreshold, fcThreshold, consistencyThreshold);
                 mcs.findTotalKGreedySubnet(k);
             }
         }

@@ -116,7 +116,7 @@ public class MCSubnet {
         List<Set<Integer>> currentSets = startSets;
         List<Set<Integer>> activeNeighbors = new ArrayList<>();
         List<boolean[]> currentVectors = new ArrayList<>();
-        List<Set<Integer>> removedGenes = new ArrayList<>();
+//        List<Set<Integer>> removedGenes = new ArrayList<>();
         for(Set<Integer> set : startSets){
             Set<Integer> activeNeighborSet = new HashSet<>();
             boolean[] vector = null;
@@ -130,13 +130,13 @@ public class MCSubnet {
             }
             activeNeighbors.add(activeNeighborSet);
             currentVectors.add(vector);
-            removedGenes.add(new HashSet<Integer>());
+//            removedGenes.add(new HashSet<Integer>());
         }
 
         List<Set<Integer>> newCurrentSets;
         List<Set<Integer>> newActiveNeighbors;
         List<boolean[]> newCurrentVectors;
-        List<Set<Integer>> newRemovedGenes;
+//        List<Set<Integer>> newRemovedGenes;
 
         List<Set<Integer>> terminatedSets = new ArrayList<>();
         List<boolean[]> terminatedVectors = new ArrayList<>();
@@ -146,7 +146,7 @@ public class MCSubnet {
             newCurrentSets = new ArrayList<>();
             newActiveNeighbors = new ArrayList<>();
             newCurrentVectors = new ArrayList<>();
-            newRemovedGenes = new ArrayList<>();
+//            newRemovedGenes = new ArrayList<>();
 
             for (int i = 0; i < currentSets.size(); i++) {
 
@@ -160,7 +160,7 @@ public class MCSubnet {
                     double joinedConsistency = calcConsistency(joinedVector);
                     if (joinedConsistency < consistencyThreshold) {
                         toRemove.add(neighbor);
-                        removedGenes.get(i).add(neighbor);
+//                        removedGenes.get(i).add(neighbor);
                     } else {
                         joinedVectors.put(neighbor, joinedVector);
                         joinedConsistencies.put(neighbor, joinedConsistency);
@@ -203,13 +203,13 @@ public class MCSubnet {
                             Set<Integer> newActiveNeighbor = new HashSet<>(activeNeighbors.get(i));
                             newActiveNeighbor.remove(geneToAdd);
                             for (int gene : neighbors.get(geneToAdd)) {
-                                if (!newCurrentSet.contains(gene) && !removedGenes.get(i).contains(gene)) {
+                                if (!newCurrentSet.contains(gene)){// && !removedGenes.get(i).contains(gene)) {
                                     newActiveNeighbor.add(gene);
                                 }
                             }
                             newActiveNeighbors.add(newActiveNeighbor);
-                            Set<Integer> newRemovedGeneSet = new HashSet<>(removedGenes.get(i));
-                            newRemovedGenes.add(newRemovedGeneSet);
+//                            Set<Integer> newRemovedGeneSet = new HashSet<>(removedGenes.get(i));
+//                            newRemovedGenes.add(newRemovedGeneSet);
                         }
                     }
                 }
@@ -217,7 +217,7 @@ public class MCSubnet {
             currentSets = newCurrentSets;
             currentVectors = newCurrentVectors;
             activeNeighbors = newActiveNeighbors;
-            removedGenes = newRemovedGenes;
+//            removedGenes = newRemovedGenes;
         }
         saveBestSolutions(terminatedSets, terminatedVectors);
     }

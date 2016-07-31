@@ -13,17 +13,16 @@ public class Main {
 //        generateRapidMinerInput();
 
 
-//        runAberrantNeighbor();
+        runAberrantNeighbor();
 
 
-        runMCSubnet();
+//        runMCSubnet();
 
 
 //        ExpressionParser.savePatientsFoldChanges("/home/proj/biosoft/praktikum/neap-ss16/assignments/data/PATIENT_SET1/", "/home/sch/schmidtju/IntellijProjects/NEAP/Prostate Cancer/patient fcs/PATIENT_SET1/");
 
 
 //        ExpressionParser.testPrediction("/home/seoman/Documents/NEAP/Prostate Cancer/GIANT_PRAD.prediction1", "/home/seoman/Documents/NEAP/Prostate Cancer/set1.patient.map");
-
 
 
 //        runDETStat();
@@ -85,11 +84,13 @@ public class Main {
                 "/home/seoman/Documents/NEAP/Prostate Cancer/PatientFoldChangePseudo/PATIENT_SET3"};
 //        String featureName = "malacard";
 //        Set<Integer> features = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt",1);
-        double[] edgeThresholds = new double[]{0.1};
-        double[] consistencyThresholds = new double[]{0.5};
+        double[] edgeThresholds = new double[]{0.1, 0.3, 0.5, 0.7, 0.9};
+        double[] consistencyThresholds = new double[]{0.5, 0.6, 0.7, 0.8};
         double fcThreshold = 1.0;
-        for(double edgeThreshold : edgeThresholds) {
-            for(double consistencyThreshold : consistencyThresholds){
+        boolean firstPatients = true;
+        for (double edgeThreshold : edgeThresholds) {
+            for (double consistencyThreshold : consistencyThresholds) {
+                boolean firstTraining = true;
                 String featureName = String.valueOf(edgeThreshold) + "_" + String.valueOf(consistencyThreshold) + "_1";
                 Set<Integer> features = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/mcSubnet/" + featureName + ".tsv", 0);
                 String disease = "prostate";
@@ -97,11 +98,11 @@ public class Main {
                 for (String patientFcDir : patientFcDirs) {
                     ExpressionParser.saveRapidMinerFoldChanges(caseFcDir, patientFcDir, features, disease,
                             rapidMinerOutDir + "training_" + featureName + ".tsv",
-                            rapidMinerOutDir + patientFcDir.substring(patientFcDir.lastIndexOf("/")) + "_" + featureName + ".tsv");
+                            rapidMinerOutDir + patientFcDir.substring(patientFcDir.lastIndexOf("/")) + ".tsv",
+                            firstTraining, firstPatients);
                 }
-        }
-        String featureName = "0.5_0.5_1";
-
+                firstPatients = false;
+            }
         }
     }
 
@@ -112,14 +113,14 @@ public class Main {
         String fcDir = "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChangePseudo/";
         String outDir = "/home/seoman/Documents/NEAP/Prostate Cancer/AberrantNeighbors/";
         String[] fcPaths = new String[tissues.length];
-        String disease = tissues[1];
-        double edgeWeightThreshhold = 0.5;
+        String disease = tissues[0];
+        double edgeWeightThreshhold = 0.9;
         for (int i = 0; i < 5; i++) {
             fcPaths[i] = fcDir + tissues[i] + "/total.fc.tsv";
         }
         for (int i = 0; i < 5; i++) {
             Network network = NetworkParser.readBinaryNetwork(networkPath + networks[i], "/home/seoman/Documents/NEAP/all_genes.txt");
-            Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/thyroid_genes.txt", 0);
+            Set<Integer> genesOfInterest = GeneIdParser.parseEntrezIds("/home/seoman/Documents/NEAP/Prostate Cancer/Malacards/all_unique_prad.txt", 1);
             AbberrantNeighbor n = new AbberrantNeighbor(network, genesOfInterest, edgeWeightThreshhold);
             n.runOnTCGAData(fcPaths, tissues, disease, outDir + disease + "_" + networks[i] + "_" + edgeWeightThreshhold + ".tsv");
 
@@ -131,8 +132,8 @@ public class Main {
         double[] consistencyThresholds = new double[]{0.5};
         int k = 2;
         double fcThreshold = 1.0;
-        for(double edgeThreshold : edgeThresholds) {
-            for(double consistencyThreshold : consistencyThresholds) {
+        for (double edgeThreshold : edgeThresholds) {
+            for (double consistencyThreshold : consistencyThresholds) {
                 System.out.println("Genereate mcSubnet: " + edgeThreshold + ", " + fcThreshold + ", " + consistencyThreshold);
                 MCSubnet mcs = new MCSubnet(edgeThreshold, fcThreshold, consistencyThreshold);
                 mcs.findTotalKGreedySubnet(k);
@@ -140,15 +141,13 @@ public class Main {
         }
     }
 
-    public static void generateTCGACountFiles(){
+    public static void generateTCGACountFiles() {
         String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast", "kidney"};
-        for(String tissue : tissues) {
+        for (String tissue : tissues) {
             ExpressionParser.mergeTCGACountFiles("/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_healthy.json",
                     "/home/seoman/Documents/NEAP/Prostate Cancer/TCGA_" + tissue + "_tumor.json",
                     "/home/seoman/programs/gdc transfer tool/", "/home/seoman/Documents/NEAP/geneId2ensembl",
-                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + tissue + "/",
-                    "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/" + tissue + "/",
-                    "/home/seoman/Documents/NEAP/Prostate Cancer/RapidMinerInput/");
+                    "/home/seoman/Documents/NEAP/Prostate Cancer/TCGAcases/" + tissue + "/");
         }
     }
 

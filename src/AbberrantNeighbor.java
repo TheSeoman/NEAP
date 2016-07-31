@@ -28,9 +28,9 @@ public class AbberrantNeighbor {
         for (int id1 : aberrantGenes.keySet()) {
             if (net.genMap.containsKey(id1)) {
                 double geneAssociation = 0.0;
-                if (genesOfInterest.contains(id1)) {
-                    geneAssociation = 1 * Math.abs(aberrantGenes.get(id1));
-                } else {
+//                if (genesOfInterest.contains(id1)) {
+//                    geneAssociation = 1 * Math.abs(aberrantGenes.get(id1));
+//                } else {
                     for (int id2 : genesOfInterest) {
                         if (net.genMap.containsKey(id2)) {
                             double edge = net.getEdge(id1, id2);
@@ -38,16 +38,16 @@ public class AbberrantNeighbor {
                                 geneAssociation += edge * Math.abs(aberrantGenes.get(id1));
                         }
                     }
-                    if (geneAssociation > 0) {
-                        int neighborCount = 0;
-                        for (int id2 : net.genMap.keySet()) {
-                            if (net.getEdge(id1, id2) >= edgeWeightThreshold) {
-                                neighborCount++;
-                            }
-                        }
-                        geneAssociation /= neighborCount;
-                    }
-                }
+//                    if (geneAssociation > 0) {
+//                        int neighborCount = 0;
+//                        for (int id2 : net.genMap.keySet()) {
+//                            if (net.getEdge(id1, id2) >= edgeWeightThreshold) {
+//                                neighborCount++;
+//                            }
+//                        }
+//                        geneAssociation /= neighborCount;
+//                    }
+//                }
                 totalAssociation += geneAssociation;
                 c++;
             }

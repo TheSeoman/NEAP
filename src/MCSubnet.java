@@ -1,4 +1,7 @@
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -13,9 +16,10 @@ public class MCSubnet {
     double fcThreshold;
     double consistencyThreshold;
 
-    private String fcDir = "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChange/prostate";
+    private String fcDir = "/home/seoman/Documents/NEAP/Prostate Cancer/FoldChangePseudo/prostate";
     private String networkPath = "/media/seoman/9CBA3874BA384CD0/Users/User/Documents/Networks/Maria/prostate_gland";
     private String allGenesPath = "/home/seoman/Documents/NEAP/all_genes.txt";
+    private String outDir = "/home/seoman/Documents/NEAP/Prostate Cancer/mcSubnet/";
 
 
     public MCSubnet(double edgeThreshold, double fcThreshold, double consistencyThreshold, String networkPath) {
@@ -215,11 +219,7 @@ public class MCSubnet {
             activeNeighbors = newActiveNeighbors;
             removedGenes = newRemovedGenes;
         }
-        System.out.println(terminatedSets.size());
-        for(int i = 0; i < terminatedSets.size(); i++){
-            double cons = calcConsistency(terminatedVectors.get(i));
-            System.out.println(terminatedSets.get(i) + "\t" + terminatedSets.get(i).size() + "\t" + cons + "\t" + terminatedSets.get(i).size() * cons);
-        }
+        saveBestSolutions(terminatedSets, terminatedVectors);
     }
 
     private double calcConsistency(boolean[] vector) {
@@ -238,6 +238,39 @@ public class MCSubnet {
             v[i] = v1[i] && v2[i];
         }
         return v;
+    }
+
+    private void saveBestSolutions(List<Set<Integer>> terminatedSets, List<boolean[]> terminatedVectors){
+        double max = 0;
+        int index = 0;
+        for(int i = 0; i < terminatedSets.size(); i++){
+            double cons = calcConsistency(terminatedVectors.get(i));
+            double score = cons * terminatedSets.get(i).size();
+            if(score > max){
+                max = score;
+                index = i;
+            }
+        }
+        try{
+            if(index == terminatedSets.size() - 1){
+                BufferedWriter out = new BufferedWriter(new FileWriter(outDir + edgeThreshold + "_" + consistencyThreshold + ".tsv"));
+                for(int gene : terminatedSets.get(index)){
+                    out.write(gene + "\n");
+                }
+                out.close();
+            }
+            else {
+                for (int i = index; i < terminatedSets.size(); i++) {
+                    BufferedWriter out = new BufferedWriter(new FileWriter(outDir + edgeThreshold + "_" + consistencyThreshold + "_" + (i - index + 1) + ".tsv"));
+                    for (int gene : terminatedSets.get(i)) {
+                        out.write(gene + "\n");
+                    }
+                    out.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,25 +13,39 @@ import java.util.Set;
 public class AbberrantNeighbor {
     Network net;
     Set<Integer> genesOfInterest;
-    double edgeWeightThreshhold;
+    double edgeWeightThreshold;
 
     public AbberrantNeighbor(Network net, Set<Integer> genesOfInterest, double param1) {
         this.net = net;
         this.genesOfInterest = genesOfInterest;
-        this.edgeWeightThreshhold = param1;
+        this.edgeWeightThreshold = param1;
 
     }
 
-    public double calculateAssociation(Map<Integer, Double> abberrantGenes) {
+    public double calculateAssociation(Map<Integer, Double> aberrantGenes) {
         double totalAssociation = 0;
         int c = 0;
-        for (int id1 : abberrantGenes.keySet()) {
+        for (int id1 : aberrantGenes.keySet()) {
             if (net.genMap.containsKey(id1)) {
                 double geneAssociation = 0.0;
-                for (int id2 : genesOfInterest) {
-                    if (net.genMap.containsKey(id2)) {
-                        double edge = net.getEdge(id1, id2);
-                        geneAssociation = score(geneAssociation, edge, abberrantGenes.get(id1));
+                if (genesOfInterest.contains(id1)) {
+                    geneAssociation = 1 * Math.abs(aberrantGenes.get(id1));
+                } else {
+                    for (int id2 : genesOfInterest) {
+                        if (net.genMap.containsKey(id2)) {
+                            double edge = net.getEdge(id1, id2);
+                            if (edge >= edgeWeightThreshold)
+                                geneAssociation += edge * Math.abs(aberrantGenes.get(id1));
+                        }
+                    }
+                    if (geneAssociation > 0) {
+                        int neighborCount = 0;
+                        for (int id2 : net.genMap.keySet()) {
+                            if (net.getEdge(id1, id2) >= edgeWeightThreshold) {
+                                neighborCount++;
+                            }
+                        }
+                        geneAssociation /= neighborCount;
                     }
                 }
                 totalAssociation += geneAssociation;
@@ -40,12 +55,6 @@ public class AbberrantNeighbor {
         return totalAssociation / c;
     }
 
-    private double score(double geneAssociation, double edge, double fc) {
-        if (edge > edgeWeightThreshhold)
-            return geneAssociation + edge * Math.abs(fc);
-        else
-            return geneAssociation;
-    }
 
     public void runOnPatientSet(String fcPath, String outPath, Map<String, String> patientMap, String disease) {
         Map<String, Double> associations = new HashMap<>();
@@ -69,21 +78,18 @@ public class AbberrantNeighbor {
         }
     }
 
-    public void runOnTCGAData(String fcPath, String outPath, String disease) {
+    public void runOnTCGAData(String[] fcPaths, String[] tissues, String disease, String outPath) {
         Map<String, Double> associations = new HashMap<>();
         Map<String, String> labels = new HashMap<>();
-        String[] tissues = new String[]{"prostate", "thyroid", "lung", "breast", "kidney"};
-        for (String tissue : tissues) {
-            File[] files = new File(fcPath + "/" + tissue).listFiles();
-            for (File file : files) {
-                if (!file.getName().equals("total.fc.tsv")) {
-                    Map<Integer, Double> aberrant = ExpressionParser.getAberrantGenes(file.getAbsolutePath(), 1);
-                    String patientId = file.getName().substring(0, file.getName().indexOf("."));
-                    associations.put(patientId, calculateAssociation(aberrant));
-                    labels.put(patientId, tissue);
-                }
+        int c = 0;
+        for (int i = 0; i < fcPaths.length; i++) {
+            List<Map<Integer, Double>> aberrant = ExpressionParser.getTotalAberrantGenes(fcPaths[i], 1);
+            for (int j = 0; j < aberrant.size(); j++) {
+                String patientId = String.valueOf(c);
+                associations.put(patientId, calculateAssociation(aberrant.get(j)));
+                labels.put(patientId, tissues[i]);
+                c++;
             }
-
         }
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(outPath));

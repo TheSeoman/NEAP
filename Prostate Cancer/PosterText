@@ -1,3 +1,6 @@
 Aberrant Neighbour.
 Motivation:
 Edges in the networks we used reflect some form of gene interaction. Therefore we expect, that expression changes in genes, which are (highly) connected to genes, that are known to be involved in cancer related processes, also influence these processes. We tried to discern between different kins of cancer, by scoring patients according to the expression changes of genes, that have edges of high weight to a set of known prostate-cancer related genes.
+
+unter plot:
+ROC curves for the associations scores of TCGA datasets with prostate cancer as positive sets. 125 genes unique for prostate cancer from Malacards were used as genes of interest. The performance is not really dependant on which network was used.
